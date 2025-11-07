@@ -1,20 +1,28 @@
-const inputs = document.querySelectorAll(".input");
+/*=============== SHOW HIDDEN - PASSWORD ===============*/
+const showHiddenPass = (inputPass, inputIcon) =>{
+   const input = document.getElementById(inputPass),
+         iconEye = document.getElementById(inputIcon)
+         
+   iconEye.addEventListener('click', () =>{
+       // Change password to text
+       if(input.type === 'password'){
+           // Switch to text
+           input.type = 'text'
 
+           // Add icon
+           iconEye.classList.add('ri-eye-line')
+           // Remove icon
+           iconEye.classList.remove('ri-eye-off-line')
+       }else{
+           // Change to password
+           input.type = 'password'
 
-function addcl(){
-	let parent = this.parentNode.parentNode;
-	parent.classList.add("focus");
+           // Remove icon
+           iconEye.classList.remove('ri-eye-line')
+           // Add icon
+           iconEye.classList.add('ri-eye-off-line')
+       }
+   })
 }
 
-function remcl(){
-	let parent = this.parentNode.parentNode;
-	if(this.value == ""){
-		parent.classList.remove("focus");
-	}
-}
-
-
-inputs.forEach(input => {
-	input.addEventListener("focus", addcl);
-	input.addEventListener("blur", remcl);
-});
+showHiddenPass('input-pass','input-icon')

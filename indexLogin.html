@@ -1,46 +1,69 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>Iniciar Sesion</title>
-	<link rel="icon" type="image/x-icon" href="login/img/logoCaferencia.ico">
-	<link rel="stylesheet" type="text/css" href="login/css/style.css">
-	<link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
-	<script src="https://kit.fontawesome.com/a81368914c.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-	<img class="wave" src="login/img/wavecafe.png">
-	<div class="container">
-		<div class="img">
-			<!--<img src="login/img/bg.svg"> -->
-		</div>
-		<div class="login-content">
-			<form action="index.html">
-				<img src="login/img/logoCaferencia.png">
-				<h2 class="title">Iniciar Sesion</h2>
-           		<div class="input-div one">
-           		   <div class="i">
-           		   		<i class="fas fa-user"></i>
-           		   </div>
-           		   <div class="div">
-           		   		<h5>Usuario</h5>
-           		   		<input type="text" class="input">
-           		   </div>
-           		</div>
-           		<div class="input-div pass">
-           		   <div class="i"> 
-           		    	<i class="fas fa-lock"></i>
-           		   </div>
-           		   <div class="div">
-           		    	<h5>Contraseña</h5>
-           		    	<input type="password" class="input">
-            	   </div>
-            	</div>
-            	
-            	<input type="submit" class="btn" value="Ingresar">
-            </form>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+        <!--=============== CSS ===============-->
+        <link rel="stylesheet" href="login/css/style.css">
+
+        <title>Iniciar Sesion</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="login__content">
+                <img src="login/img/fondofe.jpg" alt="login image" class="login__img">
+
+                <form action="" class="login__form">
+                    <div>
+                        <h1 class="login__title">
+                            <span>Iniciar Sesion</span> 
+                        </h1>
+                        <p class="login__description">
+                            <span>CAFÉHERENCIA POS</span>
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="login__inputs">
+                            <div>
+                                <label for="input-email" class="login__label">Usuario</label>
+                                <input type="email" placeholder="Enter your email address" required class="login__input" id="input-email">
+                            </div>
+    
+                            <div>
+                                <label for="input-pass" class="login__label">Contraseña</label>
+    
+                                <div class="login__box">
+                                    <input type="password" placeholder="Enter your password" required class="login__input" id="input-pass">
+                                    <i class="ri-eye-off-line login__eye" id="input-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="login__check">
+                            <input type="checkbox" class="login__check-input" id="input-check">
+                            <label for="input-check" class="login__check-label">Remember me</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="login__buttons">
+                            <button class="login__button">Log In</button>
+                            <button class="login__button login__button-ghost">Sign Up</button>
+                        </div>
+
+                        <a href="#" class="login__forgot">Forgot Password?</a>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-    <script type="text/javascript" src="login/js/main.js"></script>
-</body>
+
+
+        <!--=============== MAIN JS ===============-->
+        <script src="login/js/main.js"></script>
+    </body>
 </html>
