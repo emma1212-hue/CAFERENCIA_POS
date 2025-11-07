@@ -1,28 +1,39 @@
-/*=============== SHOW HIDDEN - PASSWORD ===============*/
-const showHiddenPass = (inputPass, inputIcon) =>{
-   const input = document.getElementById(inputPass),
-         iconEye = document.getElementById(inputIcon)
-         
-   iconEye.addEventListener('click', () =>{
-       // Change password to text
-       if(input.type === 'password'){
-           // Switch to text
-           input.type = 'text'
+const inputs = document.querySelectorAll(".input-field");
+const toggle_btn = document.querySelectorAll(".toggle");
+const main = document.querySelector("main");
+const bullets = document.querySelectorAll(".bullets span");
+const images = document.querySelectorAll(".image");
 
-           // Add icon
-           iconEye.classList.add('ri-eye-line')
-           // Remove icon
-           iconEye.classList.remove('ri-eye-off-line')
-       }else{
-           // Change to password
-           input.type = 'password'
+inputs.forEach((inp) => {
+  inp.addEventListener("focus", () => {
+    inp.classList.add("active");
+  });
+  inp.addEventListener("blur", () => {
+    if (inp.value != "") return;
+    inp.classList.remove("active");
+  });
+});
 
-           // Remove icon
-           iconEye.classList.remove('ri-eye-line')
-           // Add icon
-           iconEye.classList.add('ri-eye-off-line')
-       }
-   })
+toggle_btn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    main.classList.toggle("sign-up-mode");
+  });
+});
+
+function moveSlider() {
+  let index = this.dataset.value;
+
+  let currentImage = document.querySelector(`.img-${index}`);
+  images.forEach((img) => img.classList.remove("show"));
+  currentImage.classList.add("show");
+
+  const textSlider = document.querySelector(".text-group");
+  textSlider.style.transform = `translateY(${-(index - 1) * 2.2}rem)`;
+
+  bullets.forEach((bull) => bull.classList.remove("active"));
+  this.classList.add("active");
 }
 
-showHiddenPass('input-pass','input-icon')
+bullets.forEach((bullet) => {
+  bullet.addEventListener("click", moveSlider);
+});

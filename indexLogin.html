@@ -1,69 +1,94 @@
 <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- ajustar para que sea responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesion</title>
+    <!-- enlazar a los styles -->
+    <link rel="stylesheet" href="login/css/style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="box">
+        <div class="inner-box">
+          <!-- contenedor de formulario -->
+          <div class="forms-wrap">
+            <!-- formulario de inicio de sesión -->
+            <!-- aquí agregar conexión a la base de datos -->
+            <form action="index.html" autocomplete="off" class="sign-in-form">
+              <div class="logo">
+                <!-- logo cafeherencia -->
+                <img src="login/img/logoCaferencia.png" alt="easyclass" />
+              </div>
 
-        
-        <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+              <div class="heading">
+                <h2>Iniciar Sesion</h2>
 
-        <!--=============== CSS ===============-->
-        <link rel="stylesheet" href="login/css/style.css">
+              </div>
 
-        <title>Iniciar Sesion</title>
-    </head>
-    <body>
-        <div class="container">
-            <div class="login__content">
-                <img src="login/img/fondofe.jpg" alt="login image" class="login__img">
+              <div class="actual-form">
+                <!-- campo de usuario -->
+                <div class="input-wrap">
+                  <input
+                    type="text"
+                    minlength="4"
+                    class="input-field"
+                    autocomplete="off"
+                    required
+                  />
+                  <label>Usuario</label>
+                </div>
 
-                <form action="" class="login__form">
-                    <div>
-                        <h1 class="login__title">
-                            <span>Iniciar Sesion</span> 
-                        </h1>
-                        <p class="login__description">
-                            <span>CAFÉHERENCIA POS</span>
-                        </p>
-                    </div>
-                    
-                    <div>
-                        <div class="login__inputs">
-                            <div>
-                                <label for="input-email" class="login__label">Usuario</label>
-                                <input type="email" placeholder="Enter your email address" required class="login__input" id="input-email">
-                            </div>
-    
-                            <div>
-                                <label for="input-pass" class="login__label">Contraseña</label>
-    
-                                <div class="login__box">
-                                    <input type="password" placeholder="Enter your password" required class="login__input" id="input-pass">
-                                    <i class="ri-eye-off-line login__eye" id="input-icon"></i>
-                                </div>
-                            </div>
-                        </div>
+                <!-- campo de contraseña -->
+                <div class="input-wrap">
+                  <input
+                    type="password"
+                    minlength="4"
+                    class="input-field"
+                    autocomplete="off"
+                    required
+                  />
+                  <label>Contraseña</label>
+                </div>
 
-                        <div class="login__check">
-                            <input type="checkbox" class="login__check-input" id="input-check">
-                            <label for="input-check" class="login__check-label">Remember me</label>
-                        </div>
-                    </div>
+                <!-- botón para enviar el formulario -->
+                <input type="submit" value="Ingresar" class="sign-btn" />
 
-                    <div>
-                        <div class="login__buttons">
-                            <button class="login__button">Log In</button>
-                            <button class="login__button login__button-ghost">Sign Up</button>
-                        </div>
+              </div>
+            </form>
+          </div>
 
-                        <a href="#" class="login__forgot">Forgot Password?</a>
-                    </div>
-                </form>
+          <!-- carresul de imagenes  -->
+          <div class="carousel">
+            <div class="images-wrapper">
+              <!-- imagenes -->
+              <img src="login/img/foto1.png" class="image img-1 show" alt="" />
+              <img src="login/img/foto2.png" class="image img-2" alt="" />
+              <img src="login/img/foto3.jpg" class="image img-3" alt="" />
             </div>
+
+            <div class="text-slider">
+              <div class="text-wrap">
+                <div class="text-group">
+                  <!-- puede haber texto dinamico pero lo deje así :c -->
+                </div>
+              </div>
+
+              <div class="bullets">
+                <!-- indicadores del carrusel -->
+                <span class="active" data-value="1"></span>
+                <span data-value="2"></span>
+                <span data-value="3"></span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </main>
 
-
-        <!--=============== MAIN JS ===============-->
-        <script src="login/js/main.js"></script>
-    </body>
+    <!-- conexión al Java Script -->
+    <script src="login/js/main.js"></script>
+  </body>
 </html>
