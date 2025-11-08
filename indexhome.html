@@ -59,7 +59,7 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <h1>☕ Bienvenido Emmanuel</h1>
+                <h1>Bienvenido Admin</h1>
             </div>
             <div class="header-icons">
                 <button class="icon-btn notification-btn" onclick="showNotifications()">
@@ -82,7 +82,7 @@
                 <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🔥</div>
                 <div class="stat-info">
                     <h3>Productos Más Vendidos</h3>
-                    <p class="stat-value">Ver Top 10</p>
+                    <p class="stat-value">Ver Top</p>
                     <span class="stat-change">Café Americano #1</span>
                 </div>
             </div>
@@ -102,8 +102,8 @@
                 <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">⚠️</div>
                 <div class="stat-info">
                     <h3>Productos Bajos en Stock</h3>
-                    <p class="stat-value">8 productos</p>
-                    <span class="stat-change alert">Requiere atención</span>
+                    <p class="stat-value">2 productos</p>
+                    <span class="stat-change alert">Stock bajo</span>
                 </div>
             </div>
         </div>
@@ -112,48 +112,116 @@
         <h2 class="section-title">Accesos Rápidos</h2>
         <div class="dashboard-grid">
             <!-- Tarjeta Ventas -->
-            <div class="dashboard-card card-ventas" onclick="handleClick('ventas')">
-                <svg class="card-icon" viewBox="0 0 24 24">
-                    <rect x="2" y="7" width="20" height="14" rx="2"></rect>
-                    <path d="M16 3v4M8 3v4M2 11h20"></path>
-                    <rect x="10" y="14" width="4" height="4"></rect>
-                </svg>
-                <h2 class="card-title">Ventas</h2>
-                <p class="card-description">Registrar nueva venta</p>
+            <div class="dashboard-card card-ventas" id="card-ventas" onclick="toggleCardMenu('ventas')">
+                <div class="card-main-content">
+                    <svg class="card-icon" viewBox="0 0 24 24">
+                        <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                        <path d="M16 3v4M8 3v4M2 11h20"></path>
+                        <rect x="10" y="14" width="4" height="4"></rect>
+                    </svg>
+                    <h2 class="card-title">Ventas</h2>
+                    <p class="card-description">Registrar nueva venta</p>
+                </div>
+                <div class="card-submenu" id="submenu-ventas">
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'nueva-venta')">
+                        <span class="submenu-icon">➕</span>
+                        <span>Nueva Venta</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'modificar-venta')">
+                        <span class="submenu-icon">✏️</span>
+                        <span>Modificar Venta</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'consultar-venta')">
+                        <span class="submenu-icon">🔍</span>
+                        <span>Consultar Venta</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'impresion-tickets')">
+                        <span class="submenu-icon">🖨️</span>
+                        <span>Impresión Tickets</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Tarjeta Productos -->
-            <div class="dashboard-card card-productos" onclick="handleClick('productos')">
-                <svg class="card-icon" viewBox="0 0 24 24">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    <path d="M12 6v6m-3-3h6"></path>
-                </svg>
-                <h2 class="card-title">Productos</h2>
-                <p class="card-description">Gestionar inventario</p>
+            <div class="dashboard-card card-productos" id="card-productos" onclick="toggleCardMenu('productos')">
+                <div class="card-main-content">
+                    <svg class="card-icon" viewBox="0 0 24 24">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        <path d="M12 6v6m-3-3h6"></path>
+                    </svg>
+                    <h2 class="card-title">Productos</h2>
+                    <p class="card-description">Gestionar inventario</p>
+                </div>
+                <div class="card-submenu" id="submenu-productos">
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'registrar-producto')">
+                        <span class="submenu-icon">➕</span>
+                        <span>Registrar Producto</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'modificar-producto')">
+                        <span class="submenu-icon">✏️</span>
+                        <span>Modificar Producto</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'consultar-producto')">
+                        <span class="submenu-icon">🔍</span>
+                        <span>Consultar Producto</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'eliminar-producto')">
+                        <span class="submenu-icon">🗑️</span>
+                        <span>Eliminar Producto</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Tarjeta Usuarios -->
-            <div class="dashboard-card card-usuarios" onclick="handleClick('usuarios')">
-                <svg class="card-icon" viewBox="0 0 24 24">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-                <h2 class="card-title">Usuarios</h2>
-                <p class="card-description">Administrar personal</p>
+            <div class="dashboard-card card-usuarios" id="card-usuarios" onclick="toggleCardMenu('usuarios')">
+                <div class="card-main-content">
+                    <svg class="card-icon" viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <h2 class="card-title">Usuarios</h2>
+                    <p class="card-description">Administrar personal</p>
+                </div>
+                <div class="card-submenu" id="submenu-usuarios">
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'registrar-usuario')">
+                        <span class="submenu-icon">➕</span>
+                        <span>Registrar Usuario</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'modificar-usuario')">
+                        <span class="submenu-icon">✏️</span>
+                        <span>Modificar Usuario</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'consultar-usuario')">
+                        <span class="submenu-icon">🔍</span>
+                        <span>Consultar Usuario</span>
+                    </button>
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'baja-usuario')">
+                        <span class="submenu-icon">👤</span>
+                        <span>Dar de Baja</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Tarjeta Reporte -->
-            <div class="dashboard-card card-reporte" onclick="handleClick('reporte')">
-                <svg class="card-icon" viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                    <path d="M9 3v18M15 3v18M3 9h18M3 15h18"></path>
-                    <circle cx="12" cy="12" r="2"></circle>
-                </svg>
-                <h2 class="card-title">Reporte / Corte</h2>
-                <p class="card-description">Cierre de caja</p>
+            <div class="dashboard-card card-reporte" id="card-reporte" onclick="toggleCardMenu('reporte')">
+                <div class="card-main-content">
+                    <svg class="card-icon" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <path d="M9 3v18M15 3v18M3 9h18M3 15h18"></path>
+                        <circle cx="12" cy="12" r="2"></circle>
+                    </svg>
+                    <h2 class="card-title">Reporte / Corte</h2>
+                    <p class="card-description">Cierre de caja</p>
+                </div>
+                <div class="card-submenu" id="submenu-reporte">
+                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'corte-caja')">
+                        <span class="submenu-icon">💰</span>
+                        <span>Corte de Caja</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -194,14 +262,50 @@
         function handleClick(section) {
             console.log('Navegando a:', section);
             const messages = {
-                'ventas': 'Módulo de Ventas',
-                'productos': 'Módulo de Productos',
-                'usuarios': 'Módulo de Usuarios',
-                'reporte': 'Módulo de Reportes y Corte de Caja',
                 'mas-vendidos': 'Top 10 Productos Más Vendidos',
                 'stock-bajo': 'Lista de Productos con Stock Bajo'
             };
             alert(`Accediendo a: ${messages[section] || section}`);
+        }
+
+        // Toggle card submenu
+        function toggleCardMenu(cardType) {
+            const card = document.getElementById(`card-${cardType}`);
+            const submenu = document.getElementById(`submenu-${cardType}`);
+            
+            // Cerrar otros menús abiertos
+            document.querySelectorAll('.dashboard-card').forEach(c => {
+                if (c.id !== `card-${cardType}`) {
+                    c.classList.remove('expanded');
+                }
+            });
+            
+            // Toggle el menú actual
+            card.classList.toggle('expanded');
+        }
+
+        // Handle submenu item clicks
+        function handleSubmenuClick(event, action) {
+            event.stopPropagation();
+            
+            const messages = {
+                'nueva-venta': 'Nueva Venta',
+                'modificar-venta': 'Modificar Venta',
+                'consultar-venta': 'Consultar Venta',
+                'impresion-tickets': 'Impresión de Tickets',
+                'registrar-producto': 'Registrar Producto',
+                'modificar-producto': 'Modificar Producto',
+                'consultar-producto': 'Consultar Producto',
+                'eliminar-producto': 'Eliminar Producto',
+                'registrar-usuario': 'Registrar Nuevo Usuario',
+                'modificar-usuario': 'Modificar Usuario',
+                'consultar-usuario': 'Consultar Usuario',
+                'baja-usuario': 'Dar de Baja Usuario',
+                'corte-caja': 'Corte de Caja'
+            };
+            
+            console.log('Acción seleccionada:', action);
+            alert(`Accediendo a: ${messages[action]}`);
         }
     </script>
 </body>
