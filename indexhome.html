@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Cafetería</title>
+    <link rel="stylesheet" href="homepage/css/styleshome.css">
+</head>
+<body>
+    <!-- Menú lateral -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>☕ Menú</h2>
+            <button class="close-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span>Inicio</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">💳</span>
+                <span>Ventas</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📦</span>
+                <span>Productos</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span>Usuarios</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>Reportes</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Configuración</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🚪</span>
+                <span>Cerrar Sesión</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Overlay para el menú -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="container">
+        <!-- Header mejorado -->
+        <div class="header">
+            <div class="header-left">
+                <button class="icon-btn menu-btn" onclick="toggleSidebar()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1>☕ Bienvenido Emmanuel</h1>
+            </div>
+            <div class="header-icons">
+                <button class="icon-btn notification-btn" onclick="showNotifications()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-profile" onclick="toggleUserMenu()">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff" alt="Usuario">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjetas de información rápida -->
+        <div class="stats-container">
+            <!-- Productos Más Vendidos -->
+            <div class="stat-card clickable" onclick="handleClick('mas-vendidos')">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🔥</div>
+                <div class="stat-info">
+                    <h3>Productos Más Vendidos</h3>
+                    <p class="stat-value">Ver Top 10</p>
+                    <span class="stat-change">Café Americano #1</span>
+                </div>
+            </div>
+
+            <!-- Turno Actual -->
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">⏰</div>
+                <div class="stat-info">
+                    <h3>Turno Actual</h3>
+                    <p class="stat-value" id="currentTime">00:00:00</p>
+                    <span class="stat-change">Admin</span>
+                </div>
+            </div>
+
+            <!-- Productos Bajos en Stock -->
+            <div class="stat-card clickable" onclick="handleClick('stock-bajo')">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">⚠️</div>
+                <div class="stat-info">
+                    <h3>Productos Bajos en Stock</h3>
+                    <p class="stat-value">8 productos</p>
+                    <span class="stat-change alert">Requiere atención</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos rápidos principales -->
+        <h2 class="section-title">Accesos Rápidos</h2>
+        <div class="dashboard-grid">
+            <!-- Tarjeta Ventas -->
+            <div class="dashboard-card card-ventas" onclick="handleClick('ventas')">
+                <svg class="card-icon" viewBox="0 0 24 24">
+                    <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                    <path d="M16 3v4M8 3v4M2 11h20"></path>
+                    <rect x="10" y="14" width="4" height="4"></rect>
+                </svg>
+                <h2 class="card-title">Ventas</h2>
+                <p class="card-description">Registrar nueva venta</p>
+            </div>
+
+            <!-- Tarjeta Productos -->
+            <div class="dashboard-card card-productos" onclick="handleClick('productos')">
+                <svg class="card-icon" viewBox="0 0 24 24">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    <path d="M12 6v6m-3-3h6"></path>
+                </svg>
+                <h2 class="card-title">Productos</h2>
+                <p class="card-description">Gestionar inventario</p>
+            </div>
+
+            <!-- Tarjeta Usuarios -->
+            <div class="dashboard-card card-usuarios" onclick="handleClick('usuarios')">
+                <svg class="card-icon" viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <h2 class="card-title">Usuarios</h2>
+                <p class="card-description">Administrar personal</p>
+            </div>
+
+            <!-- Tarjeta Reporte -->
+            <div class="dashboard-card card-reporte" onclick="handleClick('reporte')">
+                <svg class="card-icon" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <path d="M9 3v18M15 3v18M3 9h18M3 15h18"></path>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+                <h2 class="card-title">Reporte / Corte</h2>
+                <p class="card-description">Cierre de caja</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Reloj en tiempo real
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-MX', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Toggle User Menu
+        function toggleUserMenu() {
+            alert('Menú de usuario:\n- Perfil\n- Configuración\n- Cerrar sesión');
+        }
+
+        // Show Notifications
+        function showNotifications() {
+            alert('Notificaciones:\n1. Nueva venta registrada\n2. Producto bajo en stock: Leche\n3. Turno por finalizar en 1 hora');
+        }
+
+        // Handle card clicks
+        function handleClick(section) {
+            console.log('Navegando a:', section);
+            const messages = {
+                'ventas': 'Módulo de Ventas',
+                'productos': 'Módulo de Productos',
+                'usuarios': 'Módulo de Usuarios',
+                'reporte': 'Módulo de Reportes y Corte de Caja',
+                'mas-vendidos': 'Top 10 Productos Más Vendidos',
+                'stock-bajo': 'Lista de Productos con Stock Bajo'
+            };
+            alert(`Accediendo a: ${messages[section] || section}`);
+        }
+    </script>
+</body>
+</html>
