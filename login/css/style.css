@@ -395,3 +395,64 @@ main.sign-up-mode .carousel {
     padding: 1rem 2rem 1.5rem;
   }
 }
+
+
+/* Mensajes de error y advertencia */
+#mensaje-contenedor {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.mensaje-error {
+    display: block;
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px !important; /* reduce grosor */
+    border-radius: 6px !important; /* esquinas menos grandes */
+    background: rgba(255, 200, 200, 0.4) !important; /* rosita más tenue */
+    width: 85%; /* más corto */
+    margin: 0 auto 10px auto; /* centrado y pequeño margen */
+}
+
+.mensaje-advertencia {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+    animation: slideDown 0.3s ease;
+}
+
+.mensaje-bloqueado {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: bold;
+    animation: slideDown 0.3s ease;
+}
+
+#contador {
+    font-weight: bold;
+    color: #c33;
+    font-size: 1.1rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

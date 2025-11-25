@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: indexLogin.php");
+    exit();
+}
+
+$rol = $_SESSION['rol'];   
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,79 +18,27 @@
     <link rel="stylesheet" href="homepage/css/styleshome.css">
 </head>
 <body>
-    <!-- Menú lateral -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>☕ Menú</h2>
-            <button class="close-btn" onclick="toggleSidebar()">✕</button>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active">
-                <span class="nav-icon">🏠</span>
-                <span>Inicio</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">💳</span>
-                <span>Ventas</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">📦</span>
-                <span>Productos</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">👥</span>
-                <span>Usuarios</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">📊</span>
-                <span>Reportes</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span>Configuración</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">🚪</span>
-                <span>Cerrar Sesión</span>
-            </a>
-        </nav>
-    </div>
-
-    <!-- Overlay para el menú -->
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-
+   
     <div class="container">
-        <!-- Header mejorado -->
+      
         <div class="header">
             <div class="header-left">
                 <button class="icon-btn menu-btn" onclick="toggleSidebar()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+
                 </button>
-                <h1>Bienvenido Admin</h1>
+             <h1>CAFERENCIA PUNTO DE VENTA</h1>
             </div>
             <div class="header-icons">
-                <button class="icon-btn notification-btn" onclick="showNotifications()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="notification-badge">3</span>
-                </button>
-                <div class="user-profile" onclick="toggleUserMenu()">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff" alt="Usuario">
-                </div>
+
+
             </div>
         </div>
 
-        <!-- Tarjetas de información rápida -->
+
         <div class="stats-container">
-            <!-- Productos Más Vendidos -->
+        
             <div class="stat-card clickable" onclick="handleClick('mas-vendidos')">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🔥</div>
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
                 <div class="stat-info">
                     <h3>Productos Más Vendidos</h3>
                     <p class="stat-value">Ver Top</p>
@@ -89,7 +48,7 @@
 
             <!-- Turno Actual -->
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">⏰</div>
+                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"></div>
                 <div class="stat-info">
                     <h3>Turno Actual</h3>
                     <p class="stat-value" id="currentTime">00:00:00</p>
@@ -99,7 +58,7 @@
 
             <!-- Productos Bajos en Stock -->
             <div class="stat-card clickable" onclick="handleClick('stock-bajo')">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">⚠️</div>
+                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"></div>
                 <div class="stat-info">
                     <h3>Productos Bajos en Stock</h3>
                     <p class="stat-value">2 productos</p>
@@ -114,30 +73,28 @@
             <!-- Tarjeta Ventas -->
             <div class="dashboard-card card-ventas" id="card-ventas" onclick="toggleCardMenu('ventas')">
                 <div class="card-main-content">
-                    <svg class="card-icon" viewBox="0 0 24 24">
-                        <rect x="2" y="7" width="20" height="14" rx="2"></rect>
-                        <path d="M16 3v4M8 3v4M2 11h20"></path>
-                        <rect x="10" y="14" width="4" height="4"></rect>
-                    </svg>
+                    
+                    <img src="homepage/img/carrito.png" alt="Ventas" class="card-icon-img">
                     <h2 class="card-title">Ventas</h2>
                     <p class="card-description">Registrar nueva venta</p>
                 </div>
                 <div class="card-submenu" id="submenu-ventas">
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'nueva-venta')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">➕</span>
-                        <span>Nueva Venta</span>
+                        <span><a href="ventas/ventas.html" style="text-decoration: none; color: inherit;">Nueva Venta</a></span>
+
                     </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'modificar-venta')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">✏️</span>
-                        <span>Modificar Venta</span>
+                        <span><a href="ventas/modificarVentas.html" style="text-decoration: none; color: inherit;">Modificar Venta</a></span>
                     </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'consultar-venta')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">🔍</span>
-                        <span>Consultar Venta</span>
+                        <span><a href="ventas/consultarVentas.html" style="text-decoration: none; color: inherit;">Consultar Venta</a></span>
                     </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'impresion-tickets')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">🖨️</span>
-                        <span>Impresión Tickets</span>
+                       <span><a href="ventas/tickets.html" style="text-decoration: none; color: inherit;">Impresión Tickets</a></span>
                     </button>
                 </div>
             </div>
@@ -145,82 +102,88 @@
             <!-- Tarjeta Productos -->
             <div class="dashboard-card card-productos" id="card-productos" onclick="toggleCardMenu('productos')">
                 <div class="card-main-content">
-                    <svg class="card-icon" viewBox="0 0 24 24">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        <path d="M12 6v6m-3-3h6"></path>
-                    </svg>
+                    
+                    <img src="homepage/img/productos.png" alt="Productos" class="card-icon-img">
                     <h2 class="card-title">Productos</h2>
                     <p class="card-description">Gestionar inventario</p>
                 </div>
                 <div class="card-submenu" id="submenu-productos">
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'registrar-producto')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">➕</span>
-                        <span>Registrar Producto</span>
+                        <span><a href="productos/registrarProductos.html" style="text-decoration: none; color: inherit;">Registrar Producto</a></span>
                     </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'modificar-producto')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">✏️</span>
-                        <span>Modificar Producto</span>
+                        <span><a href="productos/modificarProductos.html" style="text-decoration: none; color: inherit;">Modificar Producto</a></span>
                     </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'consultar-producto')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">🔍</span>
-                        <span>Consultar Producto</span>
+                        <span><a href="productos/consultarProductos.html" style="text-decoration: none; color: inherit;">Consultar Producto</a></span>
                     </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'eliminar-producto')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">🗑️</span>
-                        <span>Eliminar Producto</span>
+                    <span><a href="productos/eliminarProductos.html" style="text-decoration: none; color: inherit;">Eliminar producto</a></span>
                     </button>
                 </div>
             </div>
 
-            <!-- Tarjeta Usuarios -->
-            <div class="dashboard-card card-usuarios" id="card-usuarios" onclick="toggleCardMenu('usuarios')">
-                <div class="card-main-content">
-                    <svg class="card-icon" viewBox="0 0 24 24">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <h2 class="card-title">Usuarios</h2>
-                    <p class="card-description">Administrar personal</p>
-                </div>
-                <div class="card-submenu" id="submenu-usuarios">
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'registrar-usuario')">
-                        <span class="submenu-icon">➕</span>
-                        <span>Registrar Usuario</span>
-                    </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'modificar-usuario')">
-                        <span class="submenu-icon">✏️</span>
-                        <span>Modificar Usuario</span>
-                    </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'consultar-usuario')">
-                        <span class="submenu-icon">🔍</span>
-                        <span>Consultar Usuario</span>
-                    </button>
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'baja-usuario')">
-                        <span class="submenu-icon">👤</span>
-                        <span>Dar de Baja</span>
-                    </button>
-                </div>
-            </div>
+<?php if ($rol === 'admin'): ?>
+    <!-- Tarjeta Usuarios -->
+    <div class="dashboard-card card-usuarios" id="card-usuarios" onclick="toggleCardMenu('usuarios')">
+        <div class="card-main-content">
+            <img src="homepage/img/users.png" alt="Usuarios" class="card-icon-img">
+            <h2 class="card-title">Usuarios</h2>
+            <p class="card-description">Administrar personal</p>
+        </div>
+
+        <div class="card-submenu" id="submenu-usuarios">
+            <button class="submenu-item">
+                <span class="submenu-icon">➕</span>
+                <span><a href="usuarios/agregarUsuarios.html" style="text-decoration: none; color: inherit;">Registrar Usuario</a></span>
+            </button>
+            <button class="submenu-item">
+                <span class="submenu-icon">✏️</span>
+                <span><a href="usuarios/modificarUsuarios.html" style="text-decoration: none; color: inherit;">Modificar Usuario</a></span>
+            </button>
+            <button class="submenu-item">
+                <span class="submenu-icon">🔍</span>
+                <span><a href="usuarios/consultarUsuarios.html" style="text-decoration: none; color: inherit;">Consultar Usuario</a></span>
+            </button>
+            <button class="submenu-item">
+                <span class="submenu-icon">👤</span>
+                <span><a href="usuarios/eliminarUsuarios.html" style="text-decoration: none; color: inherit;"> Dar de Baja</a></span>
+            </button>
+        </div>
+    </div>
+<?php endif; ?>
+
 
             <!-- Tarjeta Reporte -->
             <div class="dashboard-card card-reporte" id="card-reporte" onclick="toggleCardMenu('reporte')">
                 <div class="card-main-content">
-                    <svg class="card-icon" viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <path d="M9 3v18M15 3v18M3 9h18M3 15h18"></path>
-                        <circle cx="12" cy="12" r="2"></circle>
-                    </svg>
+                 
+                    <img src="homepage/img/cortecaja.png" alt="Reportes" class="card-icon-img">
                     <h2 class="card-title">Reporte / Corte</h2>
                     <p class="card-description">Cierre de caja</p>
                 </div>
                 <div class="card-submenu" id="submenu-reporte">
-                    <button class="submenu-item" onclick="handleSubmenuClick(event, 'corte-caja')">
+                    <button class="submenu-item">
                         <span class="submenu-icon">💰</span>
-                        <span>Corte de Caja</span>
+                        <span><a href="reporte/generarReporte.html" style="text-decoration: none; color: inherit;">Corte de Caja</a></span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Tarjeta Cerrar Sesión -->
+            <div class="dashboard-card card-logout" id="card-logout" onclick="confirmLogout()">
+                <div class="card-main-content">
+                    <svg class="card-icon" viewBox="0 0 24 24">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <h2 class="card-title">Cerrar Sesión</h2>
+                    <p class="card-description">Salir del sistema</p>
                 </div>
             </div>
         </div>
@@ -306,6 +269,13 @@
             
             console.log('Acción seleccionada:', action);
             alert(`Accediendo a: ${messages[action]}`);
+        }
+
+        // Confirmar cierre de sesión
+        function confirmLogout() {
+            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                window.location.href = 'logout.php';
+            }
         }
     </script>
 </body>
