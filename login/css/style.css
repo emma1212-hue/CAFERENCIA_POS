@@ -408,11 +408,11 @@ main.sign-up-mode .carousel {
     color: red;
     font-size: 12px;
     font-weight: 500;
-    padding: 4px 8px !important; /* reduce grosor */
-    border-radius: 6px !important; /* esquinas menos grandes */
-    background: rgba(255, 200, 200, 0.4) !important; /* rosita más tenue */
-    width: 85%; /* más corto */
-    margin: 0 auto 10px auto; /* centrado y pequeño margen */
+    padding: 4px 8px !important; 
+    border-radius: 6px !important; 
+    background: rgba(255, 200, 200, 0.4) !important; 
+    width: 85%; 
+    margin: 0 auto 10px auto; 
 }
 
 .mensaje-advertencia {

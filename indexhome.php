@@ -67,7 +67,6 @@ $rol = $_SESSION['rol'];
             </div>
         </div>
 
-        <!-- Accesos rápidos principales -->
         <h2 class="section-title">Accesos Rápidos</h2>
         <div class="dashboard-grid">
             <!-- Tarjeta Ventas -->
@@ -216,12 +215,12 @@ $rol = $_SESSION['rol'];
             alert('Menú de usuario:\n- Perfil\n- Configuración\n- Cerrar sesión');
         }
 
-        // Show Notifications
+
         function showNotifications() {
             alert('Notificaciones:\n1. Nueva venta registrada\n2. Producto bajo en stock: Leche\n3. Turno por finalizar en 1 hora');
         }
 
-        // Handle card clicks
+       
         function handleClick(section) {
             console.log('Navegando a:', section);
             const messages = {
@@ -231,23 +230,23 @@ $rol = $_SESSION['rol'];
             alert(`Accediendo a: ${messages[section] || section}`);
         }
 
-        // Toggle card submenu
+     
         function toggleCardMenu(cardType) {
             const card = document.getElementById(`card-${cardType}`);
             const submenu = document.getElementById(`submenu-${cardType}`);
             
-            // Cerrar otros menús abiertos
+          
             document.querySelectorAll('.dashboard-card').forEach(c => {
                 if (c.id !== `card-${cardType}`) {
                     c.classList.remove('expanded');
                 }
             });
             
-            // Toggle el menú actual
+        
             card.classList.toggle('expanded');
         }
 
-        // Handle submenu item clicks
+     
         function handleSubmenuClick(event, action) {
             event.stopPropagation();
             

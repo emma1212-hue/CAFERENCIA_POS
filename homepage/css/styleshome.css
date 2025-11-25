@@ -34,10 +34,10 @@ body {
     overflow-x: hidden;
 }
 
-/* Fondo difuminado */
+
 body::before {
     content: "";
-    position: fixed;      /* 🔥 FONDO ESTÁTICO */
+    position: fixed;      
     top: 0;
     left: 0;
     width: 100%;
@@ -48,7 +48,7 @@ body::before {
     background-position: center -150%;
     filter: blur(2px);
     opacity: 0.25;
-    z-index: -1;          /* detrás del contenido */
+    z-index: -1;        
 }
 
 
@@ -59,18 +59,18 @@ body::before {
     margin: 0 auto;
 }
 
-/* Header mejorado */
+
 .header {
     display: flex;
-    flex-direction: column;     /* CENTRA EL TEXTO */
+    flex-direction: column;     
     justify-content: center;
-    align-items: center;        /* CENTRA EL TEXTO */
+    align-items: center;       
     margin-bottom: 30px;
-    margin-top: 25px;           /* SEPARACIÓN SUPERIOR */
+    margin-top: 25px;         
     color: var(--primary-dark);
     gap: 10px;
 
-    /* Estilo profesional */
+    
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(8px);
     padding: 20px 20px;
@@ -78,18 +78,18 @@ body::before {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Ocupa el menú y el título dentro del header */
+
 .header-left {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-/* Texto del título */
+
 .header h1 {
     font-size: 2rem;
     font-weight: 500;
-    text-align: center;         /* IMPORTANTÍSIMO */
+    text-align: center;         
     width: 100%;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.08);
 }
@@ -128,7 +128,7 @@ body::before {
     display: none;
 }
 
-/* Notificaciones */
+
 .notification-btn {
     position: relative;
 }
@@ -166,14 +166,13 @@ body::before {
 }
 
 .user-profile img {
-    width: 80%;  /* o el porcentaje que necesites */
+    width: 80%;  
     height: 80%;
     object-fit: cover;
 }
 
 
 
-/* Estadísticas rápidas */
 .stats-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -304,7 +303,6 @@ body::before {
     opacity: 1;
 }
 
-/* Card Main Content */
 .card-main-content {
     display: flex;
     flex-direction: column;
@@ -333,14 +331,13 @@ body::before {
     flex-shrink: 0;
 }
 
-/* Estilo para las imágenes de los iconos */
 .card-icon-img {
     width: 80px;
     height: 80px;
     margin-bottom: 15px;
     object-fit: contain;
     flex-shrink: 0;
-    filter: brightness(0) invert(1); /* Hace las imágenes blancas */
+    filter: brightness(0) invert(1); 
 }
 
 .card-title {
@@ -413,7 +410,7 @@ body::before {
     flex-shrink: 0;
 }
 
-/* Colores variados para cada tarjeta */
+
 .card-ventas {
     --color-start: #3498DB;
     --color-end: #2980B9;
@@ -434,7 +431,6 @@ body::before {
     --color-end: #D35400;
 }
 
-/* Tarjeta de Cerrar Sesión */
 .card-logout {
     --color-start: #E74C3C;
     --color-end: #C0392B;
@@ -444,7 +440,7 @@ body::before {
     transform: translateY(-10px) scale(1.02);
 }
 
-/* Sidebar */
+
 .sidebar {
     position: fixed;
     left: -300px;
@@ -523,7 +519,7 @@ body::before {
     font-size: 1.3rem;
 }
 
-/* Overlay */
+
 .overlay {
     position: fixed;
     top: 0;
@@ -542,7 +538,6 @@ body::before {
     visibility: visible;
 }
 
-/* Responsive */
 @media (max-width: 992px) {
     .menu-btn {
         display: flex;
@@ -582,7 +577,7 @@ body::before {
         height: 60px;
     }
 
-    /* Responsive para las imágenes */
+   
     .card-icon-img {
         width: 60px;
         height: 60px;

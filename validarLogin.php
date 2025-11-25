@@ -2,12 +2,10 @@
 session_start();
 require "conexion.php";
 
-// Inicializar intentos si no existen
 if (!isset($_SESSION['intentos'])) {
     $_SESSION['intentos'] = 3;
 }
 
-// Verificar bloqueo si existe
 if (isset($_SESSION['bloqueo_hasta'])) {
     $restante = $_SESSION['bloqueo_hasta'] - time();
 
@@ -17,7 +15,7 @@ if (isset($_SESSION['bloqueo_hasta'])) {
         header("Location: indexLogin.php");
         exit();
     } else {
-        // Se acabó el bloqueo
+       
         unset($_SESSION['bloqueo_hasta']);
         $_SESSION['intentos'] = 3;
     }
@@ -28,7 +26,6 @@ if (!empty($_POST['usuario']) && !empty($_POST['password'])) {
     $usuario = $_POST['usuario'];
     $password = $_POST['password'];
 
-    // Buscar usuario
     $sql = "SELECT * FROM usuarios WHERE nombreDeUsuario = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $usuario);
@@ -36,7 +33,7 @@ if (!empty($_POST['usuario']) && !empty($_POST['password'])) {
     $resultado = $stmt->get_result();
 
     if ($resultado->num_rows !== 1) {
-        // Usuario NO encontrado → cuenta como intento fallido
+        
         $_SESSION['intentos']--;
 
         if ($_SESSION['intentos'] <= 0) {
@@ -51,12 +48,12 @@ if (!empty($_POST['usuario']) && !empty($_POST['password'])) {
         exit();
     }
 
-    // Usuario SÍ existe → validar contraseña
+  
     $userData = $resultado->fetch_assoc();
 
     if ($password === $userData['password']) {
 
-        // Login correcto → limpiar intentos
+      
         $_SESSION['usuario'] = $userData['nombreDeUsuario'];
         $_SESSION['rol']     = $userData['rolUsuario'];
 
@@ -67,7 +64,7 @@ if (!empty($_POST['usuario']) && !empty($_POST['password'])) {
         exit();
 
     } else {
-        // Contraseña incorrecta
+        
         $_SESSION['intentos']--;
 
         if ($_SESSION['intentos'] <= 0) {

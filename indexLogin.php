@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Recuperar mensaje dinámico
+
 $mensaje = isset($_SESSION['mensaje_login']) ? $_SESSION['mensaje_login'] : "";
 $contador = isset($_SESSION['contador']) ? $_SESSION['contador'] : 0;
 
@@ -50,7 +50,6 @@ unset($_SESSION['contador']);
 
           <div class="forms-wrap">
 
-            <!-- Mensaje siempre en el mismo lugar -->
 <div class="mensaje-error" id="mensaje" style="display: <?php echo ($mensaje != '' ? 'block' : 'none'); ?>;">
   <?php echo $mensaje; ?>
 </div>
