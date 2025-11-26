@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: indexLogin.php");
+    exit();
+}
+
+$rol = $_SESSION['rol'];   
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
