@@ -412,28 +412,28 @@ body::before {
 
 
 .card-ventas {
-    --color-start: #3498DB;
-    --color-end: #2980B9;
+    --color-start: #a89b8f;
+    --color-end: #7d6a59; 
 }
 
 .card-productos {
-    --color-start: #27AE60;
-    --color-end: #229954;
+    --color-start: #7d6a59;
+    --color-end: #4a3b30;
 }
 
 .card-usuarios {
-    --color-start: #9B59B6;
-    --color-end: #8E44AD;
+    --color-start: #4a3b30;
+    --color-end: #121212;
 }
 
 .card-reporte {
-    --color-start: #E67E22;
-    --color-end: #D35400;
+    --color-start: #4a3b30;
+    --color-end: #121212;
 }
 
 .card-logout {
-    --color-start: #E74C3C;
-    --color-end: #C0392B;
+    --color-start: #502a2a;
+    --color-end: #532424;
 }
 
 .card-logout:hover {
