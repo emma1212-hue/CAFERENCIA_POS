@@ -26,7 +26,7 @@ $rol = $_SESSION['rol'];
                 <button class="icon-btn menu-btn" onclick="toggleSidebar()">
 
                 </button>
-             <h1>CAFéRENCIA - PUNTO DE VENTA</h1>
+             <h1>CAFÉRENCIA - PUNTO DE VENTA</h1>
             </div>
             <div class="header-icons">
 
