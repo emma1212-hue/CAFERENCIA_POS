@@ -1,0 +1,183 @@
+/* Estilos para mensajes de alerta */
+.alert {
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Estilos para el formulario */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    width: 100%;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-column-full {
+    grid-column: 1 / -1;
+}
+
+.form-column-left {
+    grid-column: 1;
+}
+
+.form-column-right {
+    grid-column: 2;
+}
+
+/* Estilos mejorados para el select de categorías */
+.category-select-wrapper {
+    position: relative;
+}
+
+.category-select-wrapper::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-medium);
+    pointer-events: none;
+    font-size: 0.9rem;
+}
+
+#idCategoria {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #fafafa;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.3s ease;
+    background-image: none;
+    padding-right: 40px;
+}
+
+#idCategoria:focus {
+    outline: none;
+    border-color: var(--primary-medium);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(118, 104, 89, 0.1);
+}
+
+#idCategoria:hover {
+    border-color: var(--primary-light);
+}
+
+/* Estilo para las opciones */
+#idCategoria option {
+    padding: 10px 15px;
+    background: white;
+    color: var(--text-dark);
+}
+
+#idCategoria option:first-child {
+    color: var(--text-light);
+    font-style: italic;
+}
+
+#idCategoria option:checked {
+    background: var(--primary-light);
+    color: var(--text-dark);
+}
+
+/* Contenedor de categoría con mejor espaciado */
+.form-column-right .form-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-column-right .form-group label {
+    margin-bottom: 8px;
+}
+
+.form-column-right .category-select-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Botones alineados a la izquierda */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-primary {
+    background-color: var(--primary-medium);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-column-left,
+    .form-column-right {
+        grid-column: 1;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

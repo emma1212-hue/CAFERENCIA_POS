@@ -34,7 +34,7 @@ $rol = $_SESSION['rol'];
             </div>
         </div>
 
-
+<!--
         <div class="stats-container">
         
             <div class="stat-card clickable" onclick="handleClick('mas-vendidos')">
@@ -45,8 +45,8 @@ $rol = $_SESSION['rol'];
                     <span class="stat-change">Café Americano #1</span>
                 </div>
             </div>
-
-            <!-- Turno Actual -->
+-->
+            <!-- Turno Actual 
             <div class="stat-card">
                 <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"></div>
                 <div class="stat-info">
@@ -55,8 +55,8 @@ $rol = $_SESSION['rol'];
                     <span class="stat-change">Admin</span>
                 </div>
             </div>
-
-            <!-- Productos Bajos en Stock -->
+-->
+            <!-- Productos Bajos en Stock 
             <div class="stat-card clickable" onclick="handleClick('stock-bajo')">
                 <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"></div>
                 <div class="stat-info">
@@ -65,7 +65,7 @@ $rol = $_SESSION['rol'];
                     <span class="stat-change alert">Stock bajo</span>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <h2 class="section-title">Accesos Rápidos</h2>
         <div class="dashboard-grid">
@@ -109,19 +109,19 @@ $rol = $_SESSION['rol'];
                 <div class="card-submenu" id="submenu-productos">
                     <button class="submenu-item">
                         <span class="submenu-icon">➕</span>
-                        <span><a href="productos/registrarProductos.html" style="text-decoration: none; color: inherit;">Registrar Producto</a></span>
+                        <span><a href="productos/registrarProductos.php" style="text-decoration: none; color: inherit;">Registrar Producto</a></span>
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">✏️</span>
-                        <span><a href="productos/modificarProductos.html" style="text-decoration: none; color: inherit;">Modificar Producto</a></span>
+                        <span><a href="productos/modificar_productos.php" style="text-decoration: none; color: inherit;">Modificar Producto</a></span>
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">🔍</span>
-                        <span><a href="productos/consultarProductos.html" style="text-decoration: none; color: inherit;">Consultar Producto</a></span>
+                        <span><a href="productos/consultar_productos.php" style="text-decoration: none; color: inherit;">Consultar Producto</a></span>
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">🗑️</span>
-                    <span><a href="productos/eliminarProductos.html" style="text-decoration: none; color: inherit;">Eliminar producto</a></span>
+                    <span><a href="productos/eliminar_productos.php" style="text-decoration: none; color: inherit;">Eliminar producto</a></span>
                     </button>
                 </div>
             </div>
