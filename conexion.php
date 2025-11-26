@@ -2,7 +2,8 @@
 $host = "localhost";
 $user = "root"; 
 $pass = "";     
-$db   = "caferencia";
+//$db   = "cafeherencia";
+$db = "caferencia"; //  Por si tienen otro nombre como yo jiji
 
 $conn = new mysqli($host, $user, $pass, $db);
 
