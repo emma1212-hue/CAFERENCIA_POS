@@ -138,19 +138,19 @@ $rol = $_SESSION['rol'];
         <div class="card-submenu" id="submenu-usuarios">
             <button class="submenu-item">
                 <span class="submenu-icon">➕</span>
-                <span><a href="usuarios/agregarUsuarios.html" style="text-decoration: none; color: inherit;">Registrar Usuario</a></span>
+                <span><a href="usuarios/agregarUsuarios.php" style="text-decoration: none; color: inherit;">Registrar Usuario</a></span>
             </button>
             <button class="submenu-item">
                 <span class="submenu-icon">✏️</span>
-                <span><a href="usuarios/modificarUsuarios.html" style="text-decoration: none; color: inherit;">Modificar Usuario</a></span>
+                <span><a href="usuarios/modificarUsuarios.php" style="text-decoration: none; color: inherit;">Modificar Usuario</a></span>
             </button>
             <button class="submenu-item">
                 <span class="submenu-icon">🔍</span>
-                <span><a href="usuarios/consultarUsuarios.html" style="text-decoration: none; color: inherit;">Consultar Usuario</a></span>
+                <span><a href="usuarios/consultar_usuarios.php" style="text-decoration: none; color: inherit;">Consultar Usuario</a></span>
             </button>
             <button class="submenu-item">
                 <span class="submenu-icon">👤</span>
-                <span><a href="usuarios/eliminarUsuarios.html" style="text-decoration: none; color: inherit;"> Dar de Baja</a></span>
+                <span><a href="usuarios/eliminarUsuarios.php" style="text-decoration: none; color: inherit;"> Dar de Baja</a></span>
             </button>
         </div>
     </div>

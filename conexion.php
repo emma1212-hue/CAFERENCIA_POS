@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root"; 
 $pass = "";     
-$db   = "cafeherencia";
+$db   = "caferencia";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
