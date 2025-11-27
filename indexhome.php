@@ -80,20 +80,20 @@ $rol = $_SESSION['rol'];
                 <div class="card-submenu" id="submenu-ventas">
                     <button class="submenu-item">
                         <span class="submenu-icon">➕</span>
-                        <span><a href="ventas/ventas.html" style="text-decoration: none; color: inherit;">Nueva Venta</a></span>
+                        <span><a href="ventas/ventas.php" style="text-decoration: none; color: inherit;">Nueva Venta</a></span>
 
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">✏️</span>
-                        <span><a href="ventas/modificarVentas.html" style="text-decoration: none; color: inherit;">Modificar Venta</a></span>
+                        <span><a href="ventas/modificarVentas.php" style="text-decoration: none; color: inherit;">Modificar Venta</a></span>
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">🔍</span>
-                        <span><a href="ventas/consultarVentas.html" style="text-decoration: none; color: inherit;">Consultar Venta</a></span>
+                        <span><a href="ventas/consultarVentas.php" style="text-decoration: none; color: inherit;">Consultar Venta</a></span>
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">🖨️</span>
-                       <span><a href="ventas/tickets.html" style="text-decoration: none; color: inherit;">Impresión Tickets</a></span>
+                       <span><a href="ventas/tickets.php" style="text-decoration: none; color: inherit;">Impresión Tickets</a></span>
                     </button>
                 </div>
             </div>

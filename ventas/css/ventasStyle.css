@@ -441,3 +441,117 @@
         font-size: 16px !important;
     }
 }
+/* --- Estilos para la Ventana Modal --- */
+
+.modal-overlay {
+    /* Fondo oscuro que cubre toda la pantalla */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none; /* Oculto por defecto con JS */
+    justify-content: flex-start;
+    align-items: center;
+    z-index: 1100; /* Mayor que cualquier otro elemento (sidebar, header) */
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 900px; /* Tamaño máximo de la ventana */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    /* Usar flex-direction: column para apilar título y grid */
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-title {
+    color: var(--primary-dark);
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--crema-claro);
+    padding-bottom: 10px;
+}
+
+.modal-grid {
+    display: grid;
+    /* Dos columnas: 1.2 veces el espacio para el resumen */
+    grid-template-columns: 1fr 1.2fr;
+    gap: 30px;
+    min-height: 400px;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--cafe-oscuro);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+.modal-close-btn:hover {
+    opacity: 1;
+}
+
+/* Columna Izquierda (Pagos) */
+.modal-payment-side h3 {
+    color: var(--cafe-medio);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.modal-actions {
+    margin-top: 30px;
+    /* Ajustar el padding del input para que se vea bien */
+}
+
+/* Columna Derecha (Resumen) */
+.modal-summary-side {
+    background: var(--crema-fondo); /* Fondo más claro para distinguir */
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-cart-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 250px; 
+    border-bottom: 1px solid var(--crema-claro);
+    padding-bottom: 10px;
+}
+
+.modal-summary-footer {
+    padding: 15px 0 0 0;
+}
+
+
+/* Media Query para Móviles dentro del Modal */
+@media (max-width: 700px) {
+    .modal-grid {
+        grid-template-columns: 1fr; /* Una sola columna en móvil */
+        gap: 20px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+        max-height: 90vh; /* Limitar altura */
+        overflow-y: auto;
+    }
+    
+    .modal-cart-list {
+        max-height: 150px;
+    }
+}
