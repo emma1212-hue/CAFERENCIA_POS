@@ -82,13 +82,12 @@ $rol = $_SESSION['rol'];
             </div>
 
             <div class="pos-panel pos-pago">
-                <h2>Cierre de Caja</h2>
+                <h2>Finalizar</h2>
                 
                 <div class="payment-options">
                     <p>Método de Pago:</p>
-                    <button class="payment-btn" data-method="Efectivo" onclick="openPaymentModal('Efectivo')">💵 Efectivo</button>
-                    <button class="payment-btn" data-method="Tarjeta" onclick="openPaymentModal('Tarjeta')">💳 Tarjeta</button>
-                    <button class="payment-btn" data-method="Transferencia" onclick="openPaymentModal('Transferencia')">📱 Transferencia</button>
+                    <button class="payment-btn" data-method="Efectivo" onclick="openPaymentModal('Efectivo')">Efectivo</button>
+                    <button class="payment-btn" data-method="Transferencia" onclick="openPaymentModal('Transferencia')">Transferencia</button>
                 </div>
             </div>
         </div>
@@ -98,25 +97,6 @@ $rol = $_SESSION['rol'];
             <h2 class="modal-title">Finalizar Venta</h2>
             
             <div class="modal-grid">
-                
-                <div class="modal-payment-side">
-                    <h3>Método Seleccionado: <span id="selected-payment-method">Efectivo</span></h3>
-                    
-                    <div class="cash-tender-area">
-                        <p class="tender-label">Efectivo Recibido:</p>
-                        <input type="number" id="tender-input-modal" placeholder="Ej: 0.00" class="tender-input">
-                        <div class="change-info">
-                            <span>Cambio:</span>
-                            <span class="change-value" id="change-value-modal">$0.00</span>
-                        </div>
-                    </div>
-                    <div class="action-buttons modal-actions">
-                        <button class="btn-main btn-pay" onclick="processPayment()">Pagar e Imprimir Ticket</button>
-                        <button class="btn-secondary btn-cancel" onclick="cancelSale()">Cancelar Venta</button>
-                        <button class="btn-secondary btn-hold" onclick="holdSale()">Retener Venta</button>
-                    </div>
-                </div>
-
                 <div class="modal-summary-side">
                     <h3>Detalle de la Orden</h3>
                     
@@ -138,6 +118,25 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+                <div class="modal-payment-side">
+                    <h3>Método Seleccionado: <span id="selected-payment-method">Efectivo</span></h3>
+                    
+                    <div class="cash-tender-area">
+                        <p class="tender-label">Efectivo Recibido:</p>
+                        <input type="number" id="tender-input-modal" placeholder="Ej: 0.00" class="tender-input">
+                        <div class="change-info">
+                            <span>Cambio:</span>
+                            <span class="change-value" id="change-value-modal">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons modal-actions">
+                        <button class="btn-main btn-pay" onclick="processPayment()">Pagar e Imprimir Ticket</button>
+                        <button class="btn-secondary btn-cancel" onclick="cancelSale()">Cancelar Venta</button>
+                        <button class="btn-secondary btn-hold" onclick="holdSale()">Retener Venta</button>
+                    </div>
+                </div>
+
+                
 
             </div>
             <button class="modal-close-btn" onclick="closeModal()">✖</button>
