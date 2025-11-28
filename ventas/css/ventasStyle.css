@@ -96,9 +96,10 @@
 
 .category-tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
-    overflow-x: auto;
+    overflow-x: visible;
     padding-bottom: 5px;
 }
 
@@ -181,7 +182,7 @@
 
 .cart-header {
     display: grid;
-    grid-template-columns: 3fr 1.5fr 1fr 0.3fr; 
+    grid-template-columns: 3fr 1fr 1.5fr 1.2fr 0.3fr;
     align-items: center;
     padding: 10px 0;
     font-weight: 600;
@@ -195,23 +196,34 @@
 
 .cart-item {
     display: grid;
-    grid-template-columns: 3fr 1.5fr 1fr 0.3fr;
+    grid-template-columns: 3fr 1fr 1.5fr 1.2fr 0.3fr;
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px dashed var(--crema-claro); /* Borde suave */
     font-size: 0.9rem;
     color: var(--text-dark);
+
+    cursor: pointer; /*No se si vayan a ocupar PC. pero por si acaso*/
 }
 
 .qty-btn {
-    /* Botones +/-: Crema claro */
-    background: var(--crema-claro);
+    width: 45px;
+    height: 45px;
+    background: var(--cafe-claro);
     border: none;
-    padding: 3px 8px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 900;
+    font-size: 1.5rem;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+-qty-btn:hover {
+    background: var(--cafe-medio);
+    color: white;
+}   
 
 .remove-btn {
     background: none;
@@ -283,7 +295,13 @@
     background: var(--accent-green);
     color: white;
 }
-
+#payment-modal .cart-header {
+    background: var(--crema-fondo); 
+    color: var(--primary-dark);
+    border-top: none;
+    position: sticky;
+    top: 0;
+}
 .cash-tender-area {
     /* Área de input de efectivo: crema claro */
     background: var(--crema-claro);
@@ -571,5 +589,134 @@
     
     .modal-cart-list {
         max-height: 150px;
+    }
+}
+/* --- ESTILOS DEL MODAL DE PRODUCTO (#product-modal) --- */
+
+.product-modal-content {
+    max-width: 650px; /* Más estrecho que el modal de pago */
+    min-height: 450px;
+}
+
+.product-grid-layout {
+    display: grid;
+    /* Dos columnas iguales o ligeramente inclinadas (Opciones 1.3fr | Resumen 1fr) */
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+    padding-top: 15px;
+}
+
+.modal-options-side {
+    overflow-y: auto; /* Permite scroll si hay muchos modificadores */
+    padding-right: 10px;
+}
+
+.modifier-group {
+    background: var(--crema-fondo);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.modifier-group h4 {
+    color: var(--cafe-oscuro);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.mod-option {
+    background: var(--crema-claro);
+    color: var(--cafe-oscuro);
+    border: 1px solid var(--cafe-claro);
+    padding: 8px 10px;
+    margin: 4px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.mod-option.active, .mod-option:hover {
+    background: var(--cafe-medio);
+    color: white;
+    border-color: var(--cafe-oscuro);
+}
+
+.input-discount {
+    width: 80px;
+    padding: 8px;
+    text-align: right;
+    border: 1px solid var(--cafe-oscuro);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.discount-value-display {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: var(--cafe-medio);
+}
+
+/* Columna Derecha (Resumen/Cantidad) */
+.product-summary-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    background: var(--background-dark); /* Color más oscuro para resaltar */
+    border-radius: 8px;
+}
+
+.summary-box p {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.total-modal-price {
+    font-size: 1.6rem;
+    color: var(--cafe-oscuro);
+    margin-top: 15px;
+    font-weight: 700;
+}
+
+.quantity-controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.qty-btn-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+#modal-quantity-input {
+    width: 70px;
+    text-align: center;
+    border: 1px solid var(--cafe-claro);
+    padding: 10px 0;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.btn-add-to-cart {
+    padding: 15px;
+    background: var(--accent-blue);
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Adaptación móvil del modal de producto */
+@media (max-width: 650px) {
+    .product-grid-layout {
+        grid-template-columns: 1fr;
     }
 }
