@@ -1,0 +1,367 @@
+/* consultarVentas.css - estilos extraídos de consultarVentas.php */
+
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+:root {
+    --brown-dark: #4a3b30; /* principal */
+    --brown-mid: #7d6a59; /* secundario */
+    --brown-muted: #a89b8f; /* tonos medios */
+    --accent: #d7c5b2; /* acento */
+    --bg: #f4e1d2; /* fondo suave */
+    --text: #2b2b2b;
+}
+
+
+.subtitle {
+    margin: 6px 0 0 0;
+    font-size: inherit;
+    color: var(--brown-muted);
+    font-style: normal;
+    font-weight: 500;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    font-size: 15px;
+}
+
+/* Estilos específicos para la vista de consulta de ventas */
+.container {
+    max-width: 1200px;
+    margin: 18px auto;
+    padding: 16px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    justify-content: center;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    margin: 0;
+    color: var(--brown-dark);
+    font-family: 'Great Vibes', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    line-height: 1.05;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.title-icon {
+    width: 1.2em;
+    height: 1.2em;
+    display: inline-block;
+    margin-right: 0.45rem;
+    color: var(--brown-dark);
+}
+
+.icon-btn.menu-btn {
+    background: transparent;
+    border: none;
+    color: var(--brown-dark);
+    font-size: 1.1rem;
+    cursor: pointer;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: stretch;
+    margin-bottom: 12px;
+}
+
+.search-input {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--brown-muted);
+    min-width: 200px;
+    background: #fff;
+    font-size: inherit;
+}
+
+/* Contenedor para placeholder animado */
+/* (removed animated placeholder — using native input placeholder instead) */
+
+.filter-input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--brown-muted);
+    background: #fff;
+    font-size: inherit;
+}
+
+.btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: none;
+    background: var(--brown-dark);
+    color: #fff;
+    cursor: pointer;
+    font-size: inherit;
+    font-weight: 600;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    background: var(--brown-mid);
+}
+
+/* Icono dentro de los botones */
+.btn .btn-icon,
+.btn-icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    color: inherit;
+}
+
+.btn svg { 
+    width: 1em;
+    height: 1em;
+}
+
+/* Ajustes visuales de la tabla para mejor legibilidad */
+.table-wrap {
+    width: 100%;
+    overflow: auto;
+    border-radius: 12px;
+}
+
+table.sales-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 2px;
+    min-width: 0;
+}
+
+table.sales-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 14px 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 0.85rem;
+}
+
+/* Centrar contenido de la tabla (cabeceras y celdas) */
+table.sales-table thead th,
+table.sales-table tbody td {
+    text-align: center;
+}
+
+table.sales-table tbody td {
+    padding: 16px 12px;
+    background: #fff;
+    vertical-align: middle;
+}
+
+table.sales-table tbody tr {
+    transition: transform .09s ease, box-shadow .09s ease;
+}
+
+table.sales-table tbody tr:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 3px 8px rgba(74,59,48,0.05);
+}
+
+table.sales-table tbody tr td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+/* Destacar columna de IDs */
+table.sales-table thead th:first-child,
+table.sales-table tbody td:first-child {
+    font-weight: 700;
+}
+
+table.sales-table tbody tr td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+table.sales-table tbody tr:nth-child(even) td {
+    background: #fbf7f4;
+}
+
+table.sales-table tbody tr:nth-child(odd) td {
+    background: #ffffff;
+}
+
+/* Header without gradient: solid accent color for better clarity */
+table.sales-table thead th {
+    background: var(--accent);
+    color: var(--brown-dark);
+    border: 0;
+}
+
+/* Filters panel to group options and improve contrast */
+.filters-panel {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(74,59,48,0.06);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filters-panel label {
+    color: var(--brown-dark);
+    font-weight: 600;
+    font-size: inherit;
+}
+
+.filters-panel .filter-input,
+.filters-panel select {
+    background: #fff;
+    color: var(--text);
+}
+
+.filters-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Small screens: keep cards clean */
+@media (max-width:520px) {
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input,
+    .filter-input {
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+.table-wrap {
+    width: 100%;
+    overflow: auto;
+    background: transparent;
+}
+
+/* Mobile card view */
+.cards {
+    display: none;
+    gap: 12px;
+}
+
+.sale-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--accent);
+}
+
+.card-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.card-label {
+    color: var(--brown-muted);
+    font-size: 0.9rem;
+}
+
+/* En las tarjetas, el valor del primer campo (idVenta) se muestra en negrita */
+.sale-card .card-row:first-child div:nth-child(2) {
+    font-weight: 700;
+    color: var(--brown-dark);
+}
+
+/* Hover/interactive effect for cards (only on hover-capable devices) */
+.sale-card {
+    transition: transform .16s ease, box-shadow .16s ease;
+    will-change: transform;
+    cursor: default;
+}
+
+@media (hover: hover) {
+    .sale-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 28px rgba(74,59,48,0.12);
+        cursor: pointer;
+    }
+}
+/* Mantener solo el efecto de elevación; no cambiar color en hover */
+
+/* Responsive breakpoints */
+@media (max-width:900px) {
+    table.sales-table {
+        display: none;
+    }
+
+    .cards {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .controls {
+        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header h1 {
+        font-size: 1.8rem;
+    }
+
+    .search-input {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filters-panel {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters-panel .filter-input,
+    .filters-panel select {
+        width: 100%;
+    }
+
+    .filters-actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (min-width:901px) {
+    .cards {
+        display: none;
+    }
+}
