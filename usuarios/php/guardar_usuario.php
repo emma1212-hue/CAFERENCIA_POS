@@ -11,15 +11,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirmar_password = $_POST['confirmar_password'];
     $rolUsuario = $_POST['rolUsuario'];
     
-    // Validaciones
+
     $errores = [];
     
-    // Verificar que las contraseñas coincidan
+   
     if ($password !== $confirmar_password) {
         $errores[] = "Las contraseñas no coinciden";
     }
-    
-    // Verificar campos vacíos
+
     if (empty($nombre)) {
         $errores[] = "El nombre es obligatorio";
     }
@@ -36,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El rol de usuario es obligatorio";
     }
     
-    // VERIFICACIÓN MODIFICADA: Solo verificar usuarios activos
+    
     if (empty($errores)) {
         $sql_verificar = "SELECT idUsuario FROM usuarios WHERE nombreDeUsuario = ? AND status = 'activo'";
         $stmt_verificar = $conn->prepare($sql_verificar);
@@ -51,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($errores)) {
-        // CAMBIO IMPORTANTE: Guardar la contraseña en texto plano
+       
         $sql = "INSERT INTO usuarios (nombre, nombreDeUsuario, password, rolUsuario, status) 
                 VALUES (?, ?, ?, ?, 'activo')";
         
@@ -59,11 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssss", $nombre, $nombreDeUsuario, $password, $rolUsuario);
         
         if ($stmt->execute()) {
-            // Éxito - redirigir con mensaje
+           
             header("Location: ../agregarUsuarios.php?success=1");
             exit();
         } else {
-            // Error en la base de datos
+            
             $errores[] = "Error al guardar el usuario: " . $conn->error;
         }
         
