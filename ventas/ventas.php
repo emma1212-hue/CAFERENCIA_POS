@@ -11,7 +11,7 @@ $rol = $_SESSION['rol'];
 
 $productos = [];
 // Seleccionamos ID, Nombre, Precio, Categoría y Descripción
-$sql = "SELECT idProducto, nombre, precioVenta, idCategoria, descripción FROM productos WHERE idCategoria != 6  AND idCategoria != 7 ORDER BY nombre ASC";
+$sql = "SELECT idProducto, nombre, precioVenta, idCategoria, descripcion FROM productos WHERE idCategoria != 6  AND idCategoria != 7 ORDER BY nombre ASC";
 $resultado = $conn->query($sql);
 
 if ($resultado && $resultado->num_rows > 0) {
