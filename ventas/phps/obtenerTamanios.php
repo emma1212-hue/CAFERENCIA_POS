@@ -1,53 +1,69 @@
 <?php
 // obtenerTamanios.php
-// Endpoint AJAX para obtener todas las variantes (tamaños) de un producto base.
-
-// RUTA DE INCLUSIÓN CORREGIDA: Subir dos niveles para llegar a la raíz donde está conexion.php
 require_once('../../conexion.php'); 
 
 header('Content-Type: application/json');
 
-// --- 1. Obtener y Limpiar el Nombre Base ---
-// El JavaScript envía el parámetro como 'name', así que lo esperamos como 'name'.
 $baseName = isset($_GET['name']) ? trim($_GET['name']) : '';
+$categoryId = isset($_GET['category']) ? intval($_GET['category']) : 0;
 
-// 1. CHEQUEO BÁSICO DE CONEXIÓN
 if ($conn->connect_error) {
     http_response_code(500);
-    echo json_encode(["error" => "Error de conexión a la base de datos."]);
+    echo json_encode(["error" => "Error de conexión."]);
     exit();
 }
 
 if (empty($baseName)) {
-    http_response_code(400); // Bad Request
-    echo json_encode(["error" => "Nombre base del producto no proporcionado."]);
-    $conn->close();
+    echo json_encode([]);
     exit();
 }
 
-// --- 2. Ejecución de la consulta preparada ---
-$variants = [];
-// Consulta SQL usando LIKE para encontrar todas las variantes (Chico, Grande)
-$sql = "SELECT idProducto, nombre, precioVenta FROM productos WHERE nombre LIKE ? ORDER BY precioVenta ASC";
+// Lista blanca de tamaños válidos para validar el sufijo
+$tamanosValidos = [
+    'Chico', 'Grande', 'Mediano', 'Pequeño', 
+    'CH', 'G', 'M', 'Gde', 
+    'Vaso', 'Frappé', 'Caliente', 'Frío', 
+    'Individual', 'Estándar', '' 
+];
+
+// Consulta: Busca productos que EMPIECEN con el nombre base y sean de la misma CATEGORÍA
+$sql = "SELECT idProducto, nombre, precioVenta FROM productos WHERE nombre LIKE ? AND idCategoria = ? ORDER BY precioVenta ASC";
 
 $stmt = $conn->prepare($sql);
-
-if ($stmt === false) {
-    http_response_code(500);
-    echo json_encode(["error" => "Error preparando la consulta: " . $conn->error]);
-    $conn->close();
+if (!$stmt) {
+    echo json_encode(["error" => $conn->error]);
     exit();
 }
 
-// Preparamos el parámetro de búsqueda para el LIKE
-$baseNameSearch = "%" . $baseName . "%";
-$stmt->bind_param("s", $baseNameSearch);
+$baseNameSearch = $baseName . "%"; // 'Moka%'
+$stmt->bind_param("si", $baseNameSearch, $categoryId);
 $stmt->execute();
 $resultado = $stmt->get_result();
 
-// --- 3. Procesar Resultados ---
-if ($resultado && $resultado->num_rows > 0) {
-    while ($row = $resultado->fetch_assoc()) {
+$variants = [];
+
+while ($row = $resultado->fetch_assoc()) {
+    $nombreCompleto = $row['nombre'];
+    
+    // Obtenemos lo que sobra del nombre (el sufijo)
+    // Ej: "Capuccino Moka" (sobra "Moka") vs "Capuccino Grande" (sobra "Grande")
+    $resto = trim(str_ireplace($baseName, '', $nombreCompleto));
+    
+    // Validamos si el resto es un tamaño válido
+    $esValido = false;
+    // Si el nombre es idéntico al base, es válido (producto único)
+    if ($resto === '') {
+        $esValido = true;
+    } else {
+        foreach ($tamanosValidos as $tamano) {
+            if (strcasecmp($resto, $tamano) == 0) { 
+                $esValido = true;
+                break;
+            }
+        }
+    }
+    
+    if ($esValido) {
         $variants[] = $row;
     }
 }
@@ -55,7 +71,5 @@ if ($resultado && $resultado->num_rows > 0) {
 $stmt->close();
 $conn->close();
 
-// --- 4. Devolver los Datos en Formato JSON ---
 echo json_encode($variants);
-
 ?>

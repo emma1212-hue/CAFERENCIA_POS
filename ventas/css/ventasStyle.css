@@ -29,7 +29,23 @@
     display: grid;
     grid-template-columns: 2fr 1.5fr 1fr; 
     gap: 20px;
-    min-height: 80vh; 
+    height: 85vh;
+    overflow: hidden; 
+    grid-template-rows: 1fr;
+}
+.pos-catalogo, .pos-carrito {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* El panel contenedor NO debe scrollear */
+    height: 100%;
+    min-height: 0;
+}
+
+/* Aplicar el scroll SOLO al contenido interno (Grid de productos y Lista de items) */
+.product-grid, .cart-items-list {
+    flex-grow: 1; /* Ocupa todo el espacio disponible */
+    overflow-y: auto; /* Scroll vertical aquí */
+    padding-bottom: 20px; /* Espacio al final para no cortar el último item */
 }
 
 .pos-panel {
@@ -39,7 +55,8 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Para evitar desbordes */
+    height: 100%;
+    overflow: hidden; 
 }
 
 .pos-panel h2 {
@@ -58,6 +75,22 @@
     padding: 0 20px 20px 20px; 
 }
 
+.scrollable-content, 
+.product-grid, 
+.cart-items-list {
+    flex-grow: 1; /* Ocupa todo el espacio vertical disponible */
+    overflow-y: auto; /* Habilita el scroll SOLO aquí */
+    padding: 0 20px 20px 20px; 
+}
+
+/* --- Footer Fijo (Resumen de Venta) --- */
+.fixed-footer, 
+.cart-summary {
+    flex-shrink: 0; /* Evita que el resumen se encoja */
+    background: var(--white); /* Asegura fondo blanco */
+    z-index: 5;
+    border-top: 2px solid var(--primary-dark);
+}
 /* --- Estilos de Catálogo (Columna 1) --- */
 
 .catalogo-header {
@@ -127,10 +160,14 @@
 }
 
 .product-card {
-    /* Fondo de tarjetas: Crema claro */
     background: var(--crema-claro);
     border-radius: 10px;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 140px;
     text-align: center;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -142,27 +179,27 @@
     /* Borde de hover: café medio */
     border: 2px solid var(--accent-blue);
 }
-
+/*
 .product-img {
     width: 80%;
     height: 80px;
     object-fit: contain;
     margin-bottom: 5px;
-}
+}*/
 
 .product-name {
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 1.1rem; /* Aumentar fuente del nombre */
+    font-weight: 600;
     color: var(--text-dark);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; 
+    margin-bottom: 5px;
+    white-space: normal; /* Permite que el texto baje a la siguiente línea */
+    word-wrap: break-word; /* Evita que palabras largas rompan el diseño */
+    line-height: 1.2;
 }
 
 .product-price {
-    font-size: 1rem;
+    font-size: 1.3rem; /* Destacar el precio */
     font-weight: 700;
-    /* Color de precio: café oscuro */
     color: var(--cafe-oscuro); 
     margin-top: 5px;
 }
@@ -259,6 +296,7 @@
     gap: 20px;
     padding: 20px; 
     overflow-y: auto;
+    height: 100%;
 }
 
 .payment-options {
@@ -439,6 +477,8 @@
         grid-column: 2 / 3;
         grid-row: 2 / 3;
         max-height: 40vh; 
+        height: 40vh;
+        overflow-y: auto;
     }
 }
 
@@ -719,4 +759,110 @@
     .product-grid-layout {
         grid-template-columns: 1fr;
     }
+}
+/* --- CORRECCIONES DE LAYOUT PARA CARRITO --- */
+
+/* 1. Forzar que el contenedor principal use filas completas */
+.pos-layout {
+    height: 85vh !important; /* Altura fija de la pantalla de ventas */
+    grid-template-rows: 1fr !important; /* Obliga a las columnas a llenar la altura */
+    overflow: hidden !important; /* Evita scroll en la página entera */
+}
+
+/* 2. Forzar que los paneles blancos se estiren al 100% de la celda del Grid */
+.pos-panel {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important; /* Para que el scroll sea interno */
+}
+
+/* 3. Corrección específica para el Carrito */
+.pos-carrito {
+    height: 100% !important;
+    min-height: 0 !important; /* Crucial para Firefox/Flexbox */
+}
+
+/* 4. Hacer que la lista de items ocupe TODO el espacio vacío disponible */
+.cart-items-list {
+    flex: 1 1 auto !important; /* Crecer, Encoger, Auto */
+    overflow-y: auto !important; /* Scroll vertical activado */
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+/* 5. Asegurar que el header del carrito se quede fijo arriba */
+.cart-header {
+    flex-shrink: 0 !important; /* No permitir que se aplaste */
+    position: sticky !important;
+    top: 0;
+    z-index: 10;
+    background: var(--white);
+}
+
+/* 6. Asegurar que el resumen (Total) se quede fijo abajo */
+.cart-summary {
+    flex-shrink: 0 !important; /* No permitir que se aplaste */
+    margin-top: auto !important; /* Empujar hacia abajo si hay espacio de sobra */
+}
+/* --- CORRECCIÓN TOTAL MODAL PAGO --- */
+
+#payment-modal .summary-total {
+    /* 1. Asegurar distribución (Izquierda - Derecha) */
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center;
+    width: 100%;
+
+    /* 2. Estilo de Texto (Grande y Negrita) */
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: var(--cafe-oscuro);
+
+    /* 3. Separación y Línea superior */
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid var(--cafe-medio) !important;
+}
+
+#payment-modal .total-label {
+    /* Asegurar que la etiqueta TOTAL se vea bien */
+    color: var(--cafe-oscuro);
+}
+
+#payment-modal .total-value {
+    /* Asegurar que el precio resalte */
+    color: var(--cafe-oscuro);
+}
+/* --- CORRECCIÓN FORZADA PARA EL TOTAL EN MODAL DE PAGO --- */
+
+/* 1. Asegurar que el contenedor del pie de página ocupe todo el ancho */
+#payment-modal .modal-summary-footer {
+    width: 100% !important;
+    display: block !important; /* O flex column */
+}
+
+/* 2. Forzar el estilo de la línea de Total */
+#payment-modal .summary-total {
+    /* Flexbox para separar texto y precio */
+    display: flex !important;
+    flex-direction: row !important; /* Explícitamente fila */
+    justify-content: space-between !important; /* Uno a la izq, otro a la der */
+    align-items: center !important;
+    width: 100% !important;
+    
+    /* Estilos visuales */
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: var(--cafe-oscuro) !important;
+    
+    margin-top: 20px !important;
+    padding-top: 15px !important;
+    border-top: 2px solid var(--cafe-medio) !important;
+}
+
+/* 3. Asegurar que los hijos (spans) no tengan estilos que los bloqueen */
+#payment-modal .summary-total span {
+    display: block !important; /* O inline-block */
+    width: auto !important;
 }

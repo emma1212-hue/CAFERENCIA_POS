@@ -56,6 +56,7 @@ if (!empty($_POST['usuario']) && !empty($_POST['password'])) {
       
         $_SESSION['usuario'] = $userData['nombreDeUsuario'];
         $_SESSION['rol']     = $userData['rolUsuario'];
+        $_SESSION['id_usuario'] = $userData['idUsuario'];
 
         $_SESSION['intentos'] = 3;
         unset($_SESSION['bloqueo_hasta']);
