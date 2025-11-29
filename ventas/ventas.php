@@ -145,7 +145,7 @@ if (!empty($conteo_categorias)) {
                                     '<?php echo htmlspecialchars($prod['nombre_base']); ?>',
                                     <?php echo $prod['precioVenta']; ?>,
                                     <?php echo $prod['idCategoria']; ?>,
-                                    '<?php echo htmlspecialchars($prod['descripción'] ?? ''); ?>'
+                                    '<?php echo htmlspecialchars($prod['descripcion'] ?? ''); ?>'
                                 )">
                                 
                                 <p class="product-name"><?php echo htmlspecialchars($prod['nombre_base']); ?></p>
