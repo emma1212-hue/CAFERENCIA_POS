@@ -15,12 +15,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
+ 
+    try {
+        $sql_check = "SELECT idUsuario, nombre, rolUsuario, status FROM usuarios WHERE idUsuario = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("i", $idUsuario);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+        
+        if ($result_check->num_rows === 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'El usuario no existe'
+            ]);
+            exit;
+        }
+        
+        $usuario = $result_check->fetch_assoc();
+        $stmt_check->close();
+        
+        if ($usuario['status'] === 'inactivo') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'El usuario ya fue eliminado'
+            ]);
+            exit;
+        }
+        
+        // Validar que no sea el último administrador activo
+        if ($usuario['rolUsuario'] === 'admin') {
+            $sql_admin_check = "SELECT COUNT(*) as admin_count FROM usuarios WHERE rolUsuario = 'admin' AND status = 'activo'";
+            $result_admin = $conn->query($sql_admin_check);
+            $admin_count = $result_admin->fetch_assoc()['admin_count'];
+            
+            if ($admin_count <= 1) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'No se puede eliminar el último administrador'
+                ]);
+                exit;
+            }
+        }
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error al validar usuario: ' . $e->getMessage()
+        ]);
+        exit;
+    }
+    
     try {
         
-        $conn->begin_transaction();
-        
-       
-        $sql = "DELETE FROM usuarios WHERE idUsuario = ?";
+        $sql = "UPDATE usuarios SET status = 'inactivo' WHERE idUsuario = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $idUsuario);
         
@@ -32,43 +79,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
         
         if ($filasAfectadas > 0) {
-            // 2. Calcular y establecer el próximo AUTO_INCREMENT
-            $sql_max = "SELECT COALESCE(MAX(idUsuario), 0) + 1 as next_id FROM usuarios";
-            $result = $conn->query($sql_max);
-            
-            if ($result) {
-                $row = $result->fetch_assoc();
-                $next_id = $row['next_id'];
-                
-                // Reiniciar AUTO_INCREMENT al siguiente ID secuencial
-                $sql_reset = "ALTER TABLE usuarios AUTO_INCREMENT = ?";
-                $stmt_reset = $conn->prepare($sql_reset);
-                $stmt_reset->bind_param("i", $next_id);
-                
-                if (!$stmt_reset->execute()) {
-                    throw new Exception('Error al reiniciar auto_increment: ' . $conn->error);
-                }
-                
-                $stmt_reset->close();
-            }
-            
-            $conn->commit();
-            
             echo json_encode([
                 'success' => true,
                 'message' => 'Usuario eliminado correctamente'
             ]);
-            
         } else {
-            $conn->rollback();
             echo json_encode([
                 'success' => false,
-                'message' => 'No se encontró el usuario o ya fue eliminado'
+                'message' => 'No se pudo eliminar el usuario'
             ]);
         }
         
     } catch (Exception $e) {
-        $conn->rollback();
         echo json_encode([
             'success' => false,
             'message' => 'Error: ' . $e->getMessage()

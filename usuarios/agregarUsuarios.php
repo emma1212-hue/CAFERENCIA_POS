@@ -158,7 +158,7 @@
                             include '../conexion.php';
                             
                           
-                            $sql = "SELECT idUsuario, nombre, nombreDeUsuario, password, rolUsuario FROM usuarios ORDER BY idUsuario";
+                            $sql = "SELECT idUsuario, nombre, nombreDeUsuario, password, rolUsuario FROM usuarios WHERE status='activo' ORDER BY idUsuario";
                             $result = $conn->query($sql);
                             
                             if ($result->num_rows > 0) {

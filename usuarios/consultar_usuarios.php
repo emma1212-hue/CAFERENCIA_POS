@@ -96,12 +96,12 @@
             <?php
             include '../conexion.php';
             
-           
+     
             $buscarNombre = isset($_GET['buscarNombre']) ? trim($_GET['buscarNombre']) : '';
             $buscarUsuario = isset($_GET['buscarUsuario']) ? trim($_GET['buscarUsuario']) : '';
             
-            
-            $sql = "SELECT idUsuario, nombre, nombreDeUsuario, password, rolUsuario FROM usuarios WHERE 1=1";
+          
+            $sql = "SELECT idUsuario, nombre, nombreDeUsuario, password, rolUsuario FROM usuarios WHERE status='activo'";
             $params = [];
             $types = '';
             
@@ -119,7 +119,6 @@
             
             $sql .= " ORDER BY idUsuario";
             
-            
             $stmt = $conn->prepare($sql);
             
             if (!empty($params)) {
@@ -130,7 +129,7 @@
             $result = $stmt->get_result();
             $totalResultados = $result->num_rows;
             
-            
+            // Mostrar resultados de búsqueda
             if (!empty($buscarNombre) || !empty($buscarUsuario)) {
                 echo "<div class='search-results'>";
                 echo "<i class='fas fa-info-circle'></i> ";
@@ -151,7 +150,7 @@
             ?>
         </div>
 
-      
+   
         <div class="table-section">
             <div class="table-panel">
                 <div class="table-header">
@@ -217,7 +216,7 @@
             window.location.href = 'consultarUsuarios.php';
         }
 
-        
+     
         document.addEventListener('DOMContentLoaded', function() {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
