@@ -1,5 +1,5 @@
 <?php
-// usuarios/guardar_usuario.php
+// usuarios/php/guardar_usuario.php
 
 include '../../conexion.php';
 
@@ -36,24 +36,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El rol de usuario es obligatorio";
     }
     
-    // Verificar si el usuario ya existe
+    // VERIFICACIÓN MODIFICADA: Solo verificar usuarios activos
     if (empty($errores)) {
-        $sql_verificar = "SELECT idUsuario FROM usuarios WHERE nombreDeUsuario = ?";
+        $sql_verificar = "SELECT idUsuario FROM usuarios WHERE nombreDeUsuario = ? AND status = 'activo'";
         $stmt_verificar = $conn->prepare($sql_verificar);
         $stmt_verificar->bind_param("s", $nombreDeUsuario);
         $stmt_verificar->execute();
         $result_verificar = $stmt_verificar->get_result();
         
         if ($result_verificar->num_rows > 0) {
-            $errores[] = "Ya existe un usuario con ese nombre de usuario: " . htmlspecialchars($nombreDeUsuario);
+            $errores[] = "Ya existe un usuario activo con ese nombre de usuario: " . htmlspecialchars($nombreDeUsuario);
         }
         $stmt_verificar->close();
     }
 
     if (empty($errores)) {
         // CAMBIO IMPORTANTE: Guardar la contraseña en texto plano
-        $sql = "INSERT INTO usuarios (nombre, nombreDeUsuario, password, rolUsuario) 
-                VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO usuarios (nombre, nombreDeUsuario, password, rolUsuario, status) 
+                VALUES (?, ?, ?, ?, 'activo')";
         
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssss", $nombre, $nombreDeUsuario, $password, $rolUsuario);

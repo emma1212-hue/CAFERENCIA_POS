@@ -8,7 +8,8 @@ if (isset($_GET['usuario'])) {
     $usuario = trim($_GET['usuario']);
     
     if (!empty($usuario)) {
-        $sql = "SELECT idUsuario FROM usuarios WHERE nombreDeUsuario = ?";
+        // MODIFICADO: Solo verificar usuarios activos
+        $sql = "SELECT idUsuario FROM usuarios WHERE nombreDeUsuario = ? AND status = 'activo'";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $usuario);
         $stmt->execute();
