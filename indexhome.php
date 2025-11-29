@@ -170,6 +170,10 @@ $rol = $_SESSION['rol'];
                         <span class="submenu-icon">💰</span>
                         <span><a href="reporte/generarReporte.html" style="text-decoration: none; color: inherit;">Corte de Caja</a></span>
                     </button>
+                    <button class="submenu-item">
+                        <span class="submenu-icon">📝</span>
+                        <span><a href="reporte/gastos.php" style="text-decoration: none; color: inherit;">Registrar gastos</a></span>
+                    </button>
                 </div>
             </div>
 

@@ -1,0 +1,232 @@
+/* Importa las variables de color definidas en styleshome.css 
+    Asegúrate de que styleshome.css se cargue ANTES de este archivo 
+*/
+
+/* ---------------------------------- */
+/* PALETA ESPECÍFICA (TONOS MARRONES) */
+/* ---------------------------------- */
+:root {
+    --brown-dark: #4a3b30; /* Principal, Botones, Texto Oscuro */
+    --brown-mid: #7d6a59; /* Subtítulos */
+    --brown-muted: #a89b8f; /* Bordes de formularios */
+    --accent-beige: #d7c5b2; /* Hover backgrounds, Borde de Alerta Éxito */
+    --bg-soft: #f4e1d2; /* Fondo suave */
+    --white: #FFFFFF;
+    
+    /* Colores para alertas adaptados a la paleta de tierra */
+    --alert-success-text: var(--brown-dark);          /* Texto de éxito: Marrón oscuro */
+    --alert-success-bg: #fcf0e5;                     /* Fondo de éxito: Beige muy pálido */
+    
+    --alert-error-text: #660000;                     /* Texto de error: Rojo borgoña/marrón oscuro */
+    --alert-error-bg: #fff0f0;                       /* Fondo de error: Rojo muy pálido (casi blanco) */
+    --alert-error-border: #d29494;                   /* Borde de error: Rosa apagado/marrón claro */
+}
+
+/* ---------------------------------- */
+/* Layout Principal          */
+/* ---------------------------------- */
+
+.container-wrapper {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 25px 30px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    /* Color principal marrón oscuro para el toque superior */
+    border-top: 5px solid var(--brown-dark); 
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    /* Borde inferior con color muted */
+    border-bottom: 1px solid var(--brown-muted);
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    /* Color principal marrón oscuro */
+    color: var(--brown-dark);
+    margin: 0;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    /* Color marrón medio/grisáceo */
+    color: var(--brown-mid);
+    margin: 0;
+    font-style: italic;
+}
+
+/* ---------------------------------- */
+/* Botón Volver            */
+/* ---------------------------------- */
+
+.menu-btn {
+    background: none;
+    /* Borde con color muted */
+    border: 2px solid var(--brown-muted);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, transform 0.1s;
+    flex-shrink: 0;
+}
+
+.menu-btn svg {
+    width: 20px;
+    height: 20px;
+    /* Stroke con color principal marrón oscuro */
+    stroke: var(--brown-dark);
+}
+
+.menu-btn:hover {
+    /* Hover con color acento beige */
+    background-color: var(--accent-beige);
+}
+.menu-btn:active {
+    transform: scale(0.95);
+}
+
+
+/* ---------------------------------- */
+/* Estilos de Formulario      */
+/* ---------------------------------- */
+
+.expense-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    /* Color principal marrón oscuro */
+    color: var(--brown-dark);
+    font-size: 1.05rem;
+}
+
+.form-group input[type="number"],
+.form-group textarea {
+    padding: 12px;
+    /* Borde con color muted */
+    border: 2px solid var(--brown-muted);
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    /* Foco con color principal marrón oscuro */
+    border-color: var(--brown-dark);
+    /* Sombra más sutil y oscura */
+    box-shadow: 0 0 0 3px rgba(74, 59, 48, 0.3);
+    outline: none;
+    background-color: var(--bg-soft); /* Fondo suave en foco */
+}
+
+/* ---------------------------------- */
+/* Botón de Registro         */
+/* ---------------------------------- */
+
+.submit-btn {
+    /* Fondo principal marrón oscuro */
+    background-color: var(--brown-dark);
+    color: var(--white);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    /* Sombra oscura y marcada */
+    box-shadow: 0 4px 10px rgba(74, 59, 48, 0.4);
+}
+
+.submit-btn:hover {
+    /* Un tono de marrón más oscuro al hacer hover */
+    background-color: #3b3026; 
+    box-shadow: 0 6px 12px rgba(74, 59, 48, 0.6);
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 5px rgba(74, 59, 48, 0.3);
+}
+
+.submit-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+}
+
+/* ---------------------------------- */
+/* Estilos de Alerta (CORREGIDO: Usando paleta marrón/tierra) */
+/* ---------------------------------- */
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: opacity 0.5s ease-out;
+    opacity: 1;
+}
+
+.alert.success {
+    /* Éxito: Texto marrón oscuro, Fondo beige muy claro, Borde acento beige */
+    background-color: var(--alert-success-bg); 
+    color: var(--alert-success-text);
+    border: 1px solid var(--accent-beige); 
+}
+
+.alert.error {
+    /* Error: Texto marrón oscuro, Fondo rojo pálido, Borde apagado */
+    background-color: var(--alert-error-bg); 
+    color: var(--alert-error-text);
+    border: 1px solid var(--alert-error-border); 
+}
+
+/* ---------------------------------- */
+/* Responsive             */
+/* ---------------------------------- */
+
+@media (max-width: 650px) {
+    .container-wrapper {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .submit-btn {
+        font-size: 1rem;
+        padding: 12px 18px;
+    }
+}
