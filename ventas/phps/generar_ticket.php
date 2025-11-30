@@ -48,9 +48,29 @@ $pdf->AddPage();
 $pdf->SetMargins(4, 4, 4);
 $pdf->SetAutoPageBreak(true, 2);
 
+// --- ENCABEZADO CON LOGO ---
+
+// 1. Configuración del Logo
+$rutaLogo = '../../homepage/img/logoCaferencia.png'; // <--- VERIFICA ESTA RUTA Y NOMBRE
+$anchoLogo = 25; // Ancho en milímetros que quieres que tenga el logo en el papel
+
+// Si el archivo existe, lo ponemos
+if (file_exists($rutaLogo)) {
+    // Cálculo para CENTRAR: (AnchoPapel - AnchoImagen) / 2
+    // (80 - 25) / 2 = 27.5
+    $xLogo = (80 - $anchoLogo) / 2;
+    
+    // Image(archivo, x, y, w)
+    $pdf->Image($rutaLogo, $xLogo, 4, $anchoLogo); 
+    
+    // Movemos el cursor hacia abajo para que el texto no quede encima del logo
+    $pdf->Ln(18); // Ajusta este número según la altura de tu logo
+}
+
 // --- ENCABEZADO ---
+
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(72, 5, utf8_decode('CAFÉRENCIA'), 0, 1, 'C');
+$pdf->Cell(72, 5, utf8_decode('CAFÉrencia'), 0, 1, 'C');
 $pdf->SetFont('Arial', '', 9);
 $pdf->Cell(72, 4, utf8_decode('Av. Vicente Guerrero #47'), 0, 1, 'C');
 $pdf->Cell(72, 4, utf8_decode('Centro, Iguala, Gro.'), 0, 1, 'C');
