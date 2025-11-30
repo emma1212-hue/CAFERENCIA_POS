@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Configurar Zona Horaria (Crucial para que coincida con la BD)
+date_default_timezone_set('America/Mexico_City');
+
 // Validar sesión
 if (!isset($_SESSION['usuario'])) {
     header("Location: ../indexLogin.php");
@@ -8,74 +11,98 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 $rol = $_SESSION['rol'] ?? '';
-
-// Incluir el archivo de conexión a la base de datos
-// **Ajusta esta ruta si tu archivo de conexión está en otro lugar**
-// NOTA: Se asume que 'conexion.php' está en el directorio padre.
 include '../conexion.php'; 
 
 $mensaje = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 1. Obtener y sanitizar datos del formulario
+    // 1. Obtener y sanitizar datos
     $montoGasto = filter_input(INPUT_POST, 'montoGasto', FILTER_VALIDATE_FLOAT);
     $conceptoGasto = filter_input(INPUT_POST, 'conceptoGasto', FILTER_SANITIZE_STRING);
     
-    // 2. Validar datos
+    // 2. Validaciones básicas
     if ($montoGasto === false || $montoGasto <= 0) {
-        $mensaje = "<div class='alert error'>Error: El monto del gasto debe ser un número positivo.</div>";
+        $mensaje = "<div class='alert error'>Error: El monto debe ser positivo.</div>";
     } elseif (empty($conceptoGasto)) {
-        $mensaje = "<div class='alert error'>Error: El concepto del gasto es obligatorio.</div>";
+        $mensaje = "<div class='alert error'>Error: El concepto es obligatorio.</div>";
     } else {
-        // 3. Preparar datos para la inserción
-        $fechaGasto = date('Y-m-d H:i:s');
-        // idCorte se deja NULL o 0 temporalmente. Se recomienda que este campo
-        // se actualice al momento de realizar el corte de caja real.
-        $idCorte = null; 
+        
+        // --- 3. LÓGICA DE CORTE DE CAJA (IGUAL A VENTAS) ---
+        $idCorte = null;
+        $fechaHoy = date('Y-m-d');
+        $horaActual = date('H:i:s');
 
-        try {
-            // Consulta SQL para insertar el gasto
-            // NOTA: Si el campo idCorte no acepta NULL en tu DB,
-            // debes usar un valor por defecto (ej. 0) o el ID del corte activo.
-            $sql = "INSERT INTO gastos (idCorte, fechaGasto, montoGasto, conceptoGasto) VALUES (?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
+        // A. Buscar si existe un corte abierto
+        $sqlBuscar = "SELECT idCorte, fechaCorte FROM cortecaja 
+                      WHERE (horaCierre IS NULL OR horaCierre = '00:00:00') 
+                      ORDER BY idCorte DESC LIMIT 1";
+        $resBuscar = $conn->query($sqlBuscar);
+
+        if ($resBuscar && $resBuscar->num_rows > 0) {
+            $fila = $resBuscar->fetch_assoc();
             
-            // Asumiendo que idCorte acepta NULL o usaremos un valor dummy si no.
-            // Tipos de binding: 'i' (integer/idCorte si fuera NOT NULL), 's' (string), 'd' (double/float)
-            // Ya que idCorte es NULL, debemos modificar la consulta para omitirlo si la columna lo permite
-            // O bindear 'null' si el driver lo permite (mysqli no lo hace con 's', necesita 'i' si es entero o ajustar)
-            
-            // --- USANDO UN ENFOQUE SEGURO CON NULL PARA idCorte ---
-            // Si idCorte acepta NULL, ajustamos el SQL para insertar solo los campos con valor.
-            $sql_insert = "INSERT INTO gastos (fechaGasto, montoGasto, conceptoGasto) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql_insert);
-            
-            // Bindear: 's' (fechaGasto), 'd' (montoGasto), 's' (conceptoGasto)
-            $stmt->bind_param("sds", $fechaGasto, $montoGasto, $conceptoGasto);
-            
-            if ($stmt->execute()) {
-                // Éxito
-                $mensaje = "<div class='alert success'>Gasto registrado exitosamente. ID: " . $stmt->insert_id . "</div>";
-                // Limpiar campos después del éxito
-                $montoGasto = '';
-                $conceptoGasto = '';
+            // Validar fecha del corte
+            if ($fila['fechaCorte'] == $fechaHoy) {
+                // Es de hoy, lo usamos
+                $idCorte = $fila['idCorte'];
             } else {
-                // Error en la ejecución
-                $mensaje = "<div class='alert error'>Error al registrar el gasto: " . $stmt->error . "</div>";
+                // Es viejo, lo cerramos y forzamos uno nuevo
+                $idViejo = $fila['idCorte'];
+                $conn->query("UPDATE cortecaja SET horaCierre = '23:59:59' WHERE idCorte = $idViejo");
+                $idCorte = null; 
             }
+        }
+
+        // B. Si no hay corte válido, CREAR UNO NUEVO
+        if ($idCorte === null) {
+            $sqlNuevo = "INSERT INTO cortecaja (fechaCorte, horaInicio, fondoInicial, totalVentasSistema, totalGasto, horaCierre) 
+                         VALUES (?, ?, 0, 0, 0, NULL)"; // Fondo en 0 por defecto
             
-            $stmt->close();
-        } catch (Exception $e) {
-            // Error en la conexión o preparación
-            $mensaje = "<div class='alert error'>Error del sistema: " . $e->getMessage() . "</div>";
+            $stmtCorte = $conn->prepare($sqlNuevo);
+            $stmtCorte->bind_param("ss", $fechaHoy, $horaActual);
+            
+            if ($stmtCorte->execute()) {
+                $idCorte = $conn->insert_id;
+                $stmtCorte->close();
+            } else {
+                $mensaje = "<div class='alert error'>Error crítico: No se pudo abrir caja para registrar el gasto.</div>";
+            }
+        }
+
+        // --- 4. INSERTAR EL GASTO (Si tenemos corte) ---
+        if ($idCorte) {
+            try {
+                $fechaGasto = date('Y-m-d H:i:s');
+                
+                // Actualizado a la tabla 'gastosDiarios' incluyendo idCorte
+                $sql = "INSERT INTO gastosDiarios (idCorte, fechaGasto, montoGasto, conceptoGasto) VALUES (?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                
+                // i=entero, s=string, d=double, s=string
+                $stmt->bind_param("isds", $idCorte, $fechaGasto, $montoGasto, $conceptoGasto);
+                
+                if ($stmt->execute()) {
+                    // Éxito: También actualizamos el acumulado en la tabla cortecaja para mantener sincronía
+                    $conn->query("UPDATE cortecaja SET totalGasto = totalGasto + $montoGasto WHERE idCorte = $idCorte");
+                    
+                    $mensaje = "<div class='alert success'>Gasto registrado correctamente en el Corte #$idCorte.</div>";
+                    $montoGasto = '';
+                    $conceptoGasto = '';
+                } else {
+                    $mensaje = "<div class='alert error'>Error al registrar en BD: " . $stmt->error . "</div>";
+                }
+                $stmt->close();
+
+            } catch (Exception $e) {
+                $mensaje = "<div class='alert error'>Excepción: " . $e->getMessage() . "</div>";
+            }
         }
         
-        // Cerrar conexión
         $conn->close();
     }
 }
 
-// Inicializar variables para el formulario
+// Inicializar variables para repoblar formulario si falla
 $montoGasto = $montoGasto ?? '';
 $conceptoGasto = $conceptoGasto ?? '';
 ?>

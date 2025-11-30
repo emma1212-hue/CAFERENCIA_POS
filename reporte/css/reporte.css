@@ -1,0 +1,210 @@
+/* ventas/css/reporte.css */
+
+:root {
+    --card-bg: #ffffff;
+    --text-primary: #4a3b30;
+    --text-secondary: #7d6a59;
+    --border-color: #d7c5b2;
+    --bg-page: #f4e1d2;
+}
+
+.report-container {
+    max-width: 800px !important; /* Más ancho que gastos.php */
+    background-color: var(--card-bg);
+}
+
+/* --- TARJETAS DE ESTADÍSTICAS --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(74, 59, 48, 0.08);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+.stat-card.highlight {
+    border: 2px solid var(--text-primary);
+    background-color: #faf8f5;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    background: var(--bg-page);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    margin: 5px 0 0 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.stat-sub {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* Colores específicos para valores */
+.stat-card.red .stat-value { color: #c0392b; }
+.stat-card.green .stat-value { color: #27ae60; }
+.stat-card.blue .stat-value { color: var(--text-primary); }
+
+
+/* --- SECCIÓN BALANCE --- */
+.balance-section {
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px dashed var(--border-color);
+}
+
+.balance-section h3 {
+    margin-top: 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.balance-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.balance-row.minus {
+    color: #c0392b;
+}
+
+.balance-row.total {
+    font-weight: 800;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 10px 0;
+}
+
+
+/* --- TABLA DE GASTOS --- */
+.gastos-section h3 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.gastos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.gastos-table th {
+    text-align: left;
+    padding: 10px;
+    background-color: var(--text-primary);
+    color: #fff;
+    font-weight: 500;
+}
+.gastos-table th:first-child { border-top-left-radius: 8px; }
+.gastos-table th:last-child { border-top-right-radius: 8px; text-align: right; }
+
+.gastos-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--text-primary);
+}
+
+.gastos-table td.amount {
+    text-align: right;
+    font-weight: 600;
+    color: #c0392b;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+
+/* --- BOTÓN CIERRE --- */
+.actions-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-cerrar-corte {
+    background-color: var(--text-primary);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn-cerrar-corte:hover {
+    background-color: #3d2e23;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+.empty-state h2 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    margin-bottom: 10px;
+}

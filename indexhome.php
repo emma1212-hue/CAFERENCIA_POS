@@ -168,7 +168,7 @@ $rol = $_SESSION['rol'];
                 <div class="card-submenu" id="submenu-reporte">
                     <button class="submenu-item">
                         <span class="submenu-icon">💰</span>
-                        <span><a href="reporte/generarReporte.html" style="text-decoration: none; color: inherit;">Corte de Caja</a></span>
+                        <span><a href="reporte/generarReporte.php" style="text-decoration: none; color: inherit;">Corte de Caja</a></span>
                     </button>
                     <button class="submenu-item">
                         <span class="submenu-icon">📝</span>

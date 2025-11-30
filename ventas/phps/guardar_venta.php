@@ -1,21 +1,23 @@
 <?php
 // ventas/phps/guardar_venta.php
 
-// 1. Conexión (Subimos 2 niveles para llegar a la raíz)
+// 1. Conexión
 require_once('../../conexion.php'); 
 session_start();
+
+// --- CONFIGURACIÓN DE ZONA HORARIA ---
+// IMPORTANTE: Ajusta esto a tu zona horaria para que coincida con el negocio
+date_default_timezone_set('America/Mexico_City'); 
 
 header('Content-Type: application/json');
 
 // --- VALIDACIONES INICIALES ---
 
-// Validar Sesión
 if (!isset($_SESSION['usuario'])) {
     echo json_encode(['success' => false, 'message' => 'Sesión no válida o expirada']);
     exit();
 }
 
-// Recibir JSON de JavaScript
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input) {
@@ -23,20 +25,22 @@ if (!$input) {
     exit();
 }
 
-// Extraer datos
 $items = $input['items'];
 $totalVenta = $input['total'];
 $tipoPago = $input['method'];
-// Usamos el ID del usuario en sesión, o 0 si no está definido (ajusta según tu lógica de login)
 $idUsuario = $_SESSION['id_usuario'] ?? 0; 
 
 
 // --- LÓGICA DE CORTE DE CAJA AUTOMÁTICO ---
 $idCorte = null;
-$fechaHoy = date('Y-m-d');
+$fechaHoy = date('Y-m-d'); // Fecha actual según PHP
 
-// A. Buscar si existe un corte abierto (horaCierre IS NULL)
-$sqlBuscar = "SELECT idCorte, fechaCorte FROM cortecaja WHERE horaCierre IS NULL ORDER BY idCorte DESC LIMIT 1";
+// A. Buscar si existe un corte abierto
+// MODIFICACIÓN: Buscamos NULL o '00:00:00' para evitar errores si la BD pone ceros por defecto
+$sqlBuscar = "SELECT idCorte, fechaCorte FROM cortecaja 
+              WHERE (horaCierre IS NULL OR horaCierre = '00:00:00') 
+              ORDER BY idCorte DESC LIMIT 1";
+
 $resBuscar = $conn->query($sqlBuscar);
 
 if ($resBuscar && $resBuscar->num_rows > 0) {
@@ -44,31 +48,39 @@ if ($resBuscar && $resBuscar->num_rows > 0) {
     
     // Validar si el corte abierto es del día de HOY
     if ($fila['fechaCorte'] == $fechaHoy) {
-        // Todo en orden, usamos este corte para la venta
+        // Coincide la fecha, usamos este corte
         $idCorte = $fila['idCorte'];
     } else {
-        // ¡OJO! Hay un corte abierto pero es de una FECHA ANTERIOR (olvidaron cerrar ayer).
-        // 1. Cerramos el corte viejo automáticamente para no mezclar días.
+        // Hay un corte abierto pero es de una FECHA ANTERIOR.
+        // Lo cerramos y forzamos la creación de uno nuevo.
         $idViejo = $fila['idCorte'];
-        // Cerramos a última hora del día anterior o la hora actual, usualmente se cierra para abrir uno nuevo.
         $conn->query("UPDATE cortecaja SET horaCierre = '23:59:59' WHERE idCorte = $idViejo");
         
-        // 2. Forzamos la creación de uno nuevo abajo estableciendo idCorte en null.
         $idCorte = null; 
     }
 }
 
 // B. Si no se encontró corte válido (o se cerró el viejo), CREAR UNO NUEVO
 if ($idCorte === null) {
-    // Insertamos un nuevo corte automáticamente
-    // Fondo inicial en 0 porque es automático (el cajero puede ajustarlo después si tienes esa opción)
-    $sqlNuevo = "INSERT INTO cortecaja (fechaCorte, horaInicio, fondoInicial, totalVentasSistema, totalGasto) 
-                 VALUES (CURRENT_DATE(), CURRENT_TIME(), 0, 0, 0)";
-                 
-    if ($conn->query($sqlNuevo) === TRUE) {
+    // MODIFICACIÓN:
+    // 1. Usamos '$fechaHoy' (PHP) en lugar de CURRENT_DATE() (MySQL) para asegurar consistencia al comparar.
+    // 2. Forzamos NULL en horaCierre explícitamente si tu tabla lo permite, o simplemente omitimos el campo.
+    // 3. Asegúrate que tu tabla 'cortecaja' permita NULL en 'horaCierre'.
+    
+    $horaActual = date('H:i:s');
+    
+    $sqlNuevo = "INSERT INTO cortecaja (fechaCorte, horaInicio, fondoInicial, totalVentasSistema, totalGasto, horaCierre) 
+                 VALUES (?, ?, 0, 0, 0, NULL)";
+    
+    $stmtCorte = $conn->prepare($sqlNuevo);
+    // s = string (fecha), s = string (hora)
+    $stmtCorte->bind_param("ss", $fechaHoy, $horaActual);
+    
+    if ($stmtCorte->execute()) {
         $idCorte = $conn->insert_id;
+        $stmtCorte->close();
     } else {
-        echo json_encode(['success' => false, 'message' => 'Error crítico: No se pudo abrir el Corte de Caja. ' . $conn->error]);
+        echo json_encode(['success' => false, 'message' => 'Error crítico al abrir Corte de Caja: ' . $conn->error]);
         exit();
     }
 }
@@ -78,13 +90,12 @@ if ($idCorte === null) {
 $conn->begin_transaction();
 
 try {
-    // 1. Insertar Venta (Encabezado)
+    // 1. Insertar Venta
     $sqlVenta = "INSERT INTO ventas (fechaVenta, totalVenta, tipoPago, idUsuario, idCorte) VALUES (NOW(), ?, ?, ?, ?)";
     $stmt = $conn->prepare($sqlVenta);
     
     if (!$stmt) throw new Exception("Error preparando venta: " . $conn->error);
     
-    // d=double, s=string, i=integer
     $stmt->bind_param("dsii", $totalVenta, $tipoPago, $idUsuario, $idCorte);
     
     if (!$stmt->execute()) {
@@ -101,32 +112,35 @@ try {
     $sqlStock = "UPDATE productos SET stockActual = stockActual - ? WHERE idProducto = ?";
     $stmtStock = $conn->prepare($sqlStock);
 
-    // 3. Recorrer productos del carrito
+    // 3. Recorrer productos
     foreach ($items as $item) {
         $idProd = $item['id'];
         $cant = $item['quantity'];
         $precioUnitarioFinal = $item['finalPrice']; 
         
-        // Cálculo del monto de descuento para el registro
+        // Cálculo del monto de descuento
         $precioBaseConExtras = $item['basePrice'];
-        foreach ($item['selectedModifiers'] as $mod) { 
-            $precioBaseConExtras += $mod['adjust']; 
+        if(isset($item['selectedModifiers'])){
+            foreach ($item['selectedModifiers'] as $mod) { 
+                $precioBaseConExtras += $mod['adjust']; 
+            }
         }
         $montoDescuento = ($precioBaseConExtras * $cant) * ($item['discountPercentage'] / 100);
 
-        // Construir string de Observaciones (Ej: "Entera, Shot Extra")
+        // Observaciones
         $obsArray = [];
-        foreach ($item['selectedModifiers'] as $key => $mod) {
-            $obsArray[] = $mod['value'];
+        if(isset($item['selectedModifiers'])){
+            foreach ($item['selectedModifiers'] as $key => $mod) {
+                $obsArray[] = $mod['value'];
+            }
         }
         $observaciones = implode(", ", $obsArray);
 
         // Insertar Detalle
-        // Tipos: i(idVenta), i(idProd), i(cant), d(precio), s(obs), d(desc)
         $stmtDetalle->bind_param("iiidsd", $idVenta, $idProd, $cant, $precioUnitarioFinal, $observaciones, $montoDescuento);
         
         if (!$stmtDetalle->execute()) {
-            throw new Exception("Error al guardar detalle del producto ID $idProd: " . $stmtDetalle->error);
+            throw new Exception("Error al guardar detalle ID $idProd: " . $stmtDetalle->error);
         }
 
         // Descontar Stock
@@ -134,12 +148,10 @@ try {
         $stmtStock->execute();
     }
 
-    // 4. Confirmar todo
     $conn->commit();
-    echo json_encode(['success' => true, 'message' => 'Venta registrada correctamente', 'idVenta' => $idVenta]);
+    echo json_encode(['success' => true, 'message' => 'Venta registrada', 'idVenta' => $idVenta]);
 
 } catch (Exception $e) {
-    // Si algo falla, deshacer cambios en la DB
     $conn->rollback();
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
