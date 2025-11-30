@@ -523,7 +523,7 @@
     display: none; /* Oculto por defecto con JS */
     justify-content: center;
     align-items: center;
-    z-index: 1100; /* Mayor que cualquier otro elemento (sidebar, header) */
+    z-index: 3000; /* Mayor que todos los otros modales */
 }
 
 .modal-content {
@@ -634,8 +634,30 @@
 /* --- ESTILOS DEL MODAL DE PRODUCTO (#product-modal) --- */
 
 .product-modal-content {
-    max-width: 650px; /* Más estrecho que el modal de pago */
+    max-width: 850px; /* Ampliado para mejor visualización */
     min-height: 450px;
+    max-height: 90vh; /* Altura máxima basada en viewport */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.product-modal-content .modal-title {
+    flex-shrink: 0; /* No se encoge */
+    margin-bottom: 15px;
+}
+
+.product-modal-content .product-grid-layout {
+    flex: 1;
+    overflow-y: auto; /* Solo el contenido scrollea */
+    padding-right: 10px;
+}
+
+.product-modal-content .modal-close-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3001; /* Sobre el modal */
 }
 
 .product-grid-layout {

@@ -1,11 +1,249 @@
+<?php
+session_start();
+
+// AJUSTA LA RUTA DE CONEXIÓN SI ES NECESARIO
+include '../conexion.php'; 
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../indexLogin.php");
+    exit();
+}
+
+$rol = $_SESSION['rol'] ?? 'Cajero'; 
+
+// FUNCIÓN PARA OBTENER VENTAS
+function obtenerTodasLasVentas($conn) {
+    // Usamos u.nombre para mostrar el nombre real del cajero
+    $sql = "SELECT v.idVenta, v.fechaVenta AS fecha, v.totalVenta AS total, v.tipoPago, u.nombre AS cajero 
+            FROM ventas v
+            JOIN usuarios u ON v.idUsuario = u.idUsuario
+            ORDER BY v.fechaVenta DESC"; 
+
+    $resultado = $conn->query($sql);
+    $ventas = [];
+
+    if ($resultado && $resultado->num_rows > 0) {
+        while ($fila = $resultado->fetch_assoc()) {
+            $ventas[] = $fila;
+        }
+    }
+    return $ventas;
+}
+
+$ventas = obtenerTodasLasVentas($conn);
+$tiposDePago = ['Efectivo', 'Tarjeta', 'Transferencia']; // Ajusta según tu DB si tienes más
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Tickets | Cafetería</title>
     
+    <link rel="stylesheet" href="../homepage/css/styleshome.css">
+    <link rel="stylesheet" href="css/consultarVentas.css">
+</head>
+<body onload="applyFilters()">
+    <div class="container">
+        <div class="header">
+            <button class="icon-btn" onclick="window.location.href='../indexhome.php'">&#8592;</button>
+            <div>
+                <h1>Tickets</h1>
+                <p class="subtitle">Reimpresión de tickets</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Buscar (ID/Cajero):</label>
+                <input type="text" id="q" placeholder="Ej: 25 o Juan">
+            </div>
+            
+            <div class="control-group">
+                <label>Tipo Pago:</label>
+                <select id="tipoPagoFilter">
+                    <option value="">Todos</option>
+                    <?php foreach ($tiposDePago as $tipo): ?>
+                        <option value="<?php echo htmlspecialchars($tipo); ?>"><?php echo htmlspecialchars($tipo); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Desde:</label>
+                <input type="date" id="fromDate">
+            </div>
+            
+            <div class="control-group">
+                <label>Hasta:</label>
+                <input type="date" id="toDate">
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-search" onclick="applyFilters()">Buscar</button>
+                <button class="btn btn-reset" onclick="resetFilters()">Limpiar</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th> 
+                        <th>Fecha y Hora</th>
+                        <th>Cajero</th>
+                        <th style="text-align: center;">Tipo Pago</th>
+                        <th style="text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                    <?php foreach ($ventas as $v): 
+                        $fechaF = date('d/m/Y h:i A', strtotime($v['fecha']));
+                        $fechaData = date('Y-m-d', strtotime($v['fecha']));
+                    ?>
+                    <tr onclick="showReprinterConfirmation(<?php echo $v['idVenta']; ?>)"
+                        data-fecha="<?php echo $fechaData; ?>"
+                        data-usuario="<?php echo strtolower($v['cajero']); ?>"
+                        data-pago="<?php echo strtolower($v['tipoPago']); ?>"
+                        style="cursor: pointer;">
+                        
+                        <td style="text-align: center; font-weight: bold; color: var(--cafe-medio);"><?php echo $v['idVenta']; ?></td>
+                        <td><?php echo $fechaF; ?></td>
+                        <td><?php echo $v['cajero']; ?></td>
+                        <td style="text-align: center;">
+                            <span style="padding: 4px 10px; background: #eee; border-radius: 12px; font-size: 0.85rem;">
+                                <?php echo $v['tipoPago']; ?>
+                            </span>
+                        </td>
+                        <td style="text-align: right; font-weight: bold; color: var(--cafe-oscuro);">$<?php echo number_format($v['total'], 2); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <ul class="cards" id="salesCardsList">
+            <?php foreach ($ventas as $v): 
+                $fechaF = date('d/m/Y h:i A', strtotime($v['fecha']));
+                $fechaData = date('Y-m-d', strtotime($v['fecha']));
+            ?>
+            <li class="sale-card" 
+                onclick="showReprinterConfirmation(<?php echo $v['idVenta']; ?>)"
+                data-fecha="<?php echo $fechaData; ?>"
+                data-usuario="<?php echo strtolower($v['cajero']); ?>"
+                data-pago="<?php echo strtolower($v['tipoPago']); ?>"
+                style="cursor: pointer;">
+                <div class="card-row"><span>ID Venta:</span> <b>#<?php echo $v['idVenta']; ?></b></div>
+                <div class="card-row"><span>Fecha:</span> <?php echo $fechaF; ?></div>
+                <div class="card-row"><span>Cajero:</span> <?php echo $v['cajero']; ?></div>
+                <div class="card-row"><span>Pago:</span> <?php echo $v['tipoPago']; ?></div>
+                <div class="card-row total-row"><span>Total:</span> $<?php echo number_format($v['total'], 2); ?></div>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+    <!-- Modal de Confirmación para Reimpresión -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color: var(--cafe-oscuro); margin-top: 0;">¿Reimprimir Ticket?</h2>
+            <p style="color: var(--texto); font-size: 1rem; line-height: 1.6;">
+                ¿Deseas reimprimir el ticket #<span id="confirmVentaId"></span>?
+            </p>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 25px;">
+                <button onclick="confirmReprinter()" class="btn btn-search" style="flex: 1; height: 40px;">Sí, Reimprimir</button>
+                <button onclick="cancelReprinter()" class="btn btn-reset" style="flex: 1; height: 40px;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 style="color: var(--cafe-oscuro); border-bottom: 2px solid var(--crema-claro); padding-bottom: 10px; margin-top:0;">
+                Detalle Venta #<span id="modalId"></span>
+            </h2>
+            <p style="color: var(--cafe-medio); margin-bottom: 20px;">Fecha: <span id="modalFecha" style="font-weight:bold;"></span></p>
+            
+            <div id="modalContent" style="max-height: 350px; overflow-y: auto;">
+                Cargando...
+            </div>
+            
+            <div style="text-align:right; margin-top:20px; font-size:1.4em; color: var(--cafe-oscuro); border-top: 1px solid #eee; padding-top: 10px;">
+                <strong>Total: $<span id="modalTotal"></span></strong>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="showReprinterConfirmation(currentVentaId)" class="btn btn-search" style="width: 100%; height: 45px;">🖨️ Reimprimir Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ID GLOBAL PARA REIMPRESIÓN
+        let currentVentaId = 0;
+
+        function showReprinterConfirmation(id) {
+            currentVentaId = id;
+            document.getElementById('confirmVentaId').textContent = id;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        function confirmReprinter() {
+            if(currentVentaId > 0) {
+                document.getElementById('confirmModal').style.display = 'none';
+                window.open('phps/generar_ticket.php?id=' + currentVentaId, '_blank');
+            }
+        }
+
+        function cancelReprinter() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            const confirmModal = document.getElementById('confirmModal');
+            if (e.target === confirmModal) cancelReprinter();
+        }
+
+        // LÓGICA DE FILTRADO
+        function applyFilters() {
+            let q = document.getElementById('q').value.toLowerCase();
+            let pago = document.getElementById('tipoPagoFilter').value.toLowerCase();
+            let from = document.getElementById('fromDate').value;
+            let to = document.getElementById('toDate').value;
+
+            let items = document.querySelectorAll('#salesTableBody tr, #salesCardsList li');
+
+            items.forEach(el => {
+                // Obtener datos
+                const idVenta = el.tagName === 'TR' ? el.cells[0].textContent : el.querySelector('b').textContent.replace('#','');
+                const elUser = el.getAttribute('data-usuario');
+                const elPago = el.getAttribute('data-pago');
+                const elFecha = el.getAttribute('data-fecha');
+                
+                let show = true;
+
+                // 1. Filtro Texto (ID o Cajero)
+                if (q && !(idVenta.includes(q) || elUser.includes(q))) show = false;
+                // 2. Filtro Pago
+                if (pago && elPago !== pago) show = false;
+                // 3. Filtro Fechas
+                if (from && elFecha < from) show = false;
+                if (to && elFecha > to) show = false;
+
+                el.style.display = show ? '' : 'none';
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('q').value = '';
+            document.getElementById('tipoPagoFilter').value = '';
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            applyFilters();
+        }
+    </script>
 </body>
 </html>

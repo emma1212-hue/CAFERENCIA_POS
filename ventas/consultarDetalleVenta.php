@@ -10,7 +10,7 @@ $idVenta = (int)$_POST['idVenta'];
 // Se usa (vd.cantidad * vd.precioUnitario) como subtotal.
 $sql = "SELECT 
             vd.cantidad, 
-            vd.precioUnitario, 
+            vd.precioUnitario, vd.descuento, vd.idProducto,
             (vd.cantidad * vd.precioUnitario) as subtotal,
             p.nombre 
         FROM ventasdetalle vd
@@ -34,7 +34,7 @@ if ($res->num_rows > 0): ?>
         </thead>
         <tbody>
             <?php while ($row = $res->fetch_assoc()): ?>
-            <tr>
+            <tr data-product-id="<?php echo $row['idProducto']; ?>" data-discount="<?php echo $row['descuento']; ?>">
                 <td style="text-align:left;"><?php echo htmlspecialchars($row['nombre']); ?></td>
                 <td style="text-align:center;"><?php echo $row['cantidad']; ?></td>
                 <td>$<?php echo number_format($row['precioUnitario'], 2); ?></td>
