@@ -1,0 +1,58 @@
+<div id="product-modal" class="modal-overlay">
+        <div class="modal-content product-modal-content">
+            <h2 class="modal-title" style="margin-bottom:5px;">Personalizar: <span id="modal-product-name"></span></h2>
+            <p id="modal-product-desc" style="color:var(--text-light); font-style:italic; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:15px;"></p>
+            
+            <div class="modal-grid product-grid-layout">
+                <div class="modal-options-side">
+                    <div class="modifier-group" id="group-size" style="display:none;">
+                        <h4>Tamaño:</h4>
+                    </div>
+
+                    <div class="modifier-group" id="group-flavors" style="display:none;">
+                        <h4>Elige un Sabor:</h4>
+                        <div id="flavors-container" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+
+                    <div class="modifier-group" id="group-milk">
+                        <h4>Leche Base:</h4>
+                        <button class="mod-option active" data-mod-name="MilkBase" data-mod-value="Entera" data-price-adjust="0">Entera</button>
+                        <button class="mod-option" data-mod-name="MilkBase" data-mod-value="Deslactosada" data-price-adjust="0">Deslactosada</button>
+                    </div>
+
+                    <div class="modifier-group" id="group-extras">
+                        <h4>Extras:</h4>
+                        <div id="extras-container" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+
+                    <div class="modifier-group">
+                        <h4>Descuento (%):</h4>
+                        <input type="number" id="modal-discount-input" min="0"max="100" placeholder="%" class="input-discount" oninput="updateProductPrice()" onchange="updateProductPrice()">
+                        <span class="discount-value-display" style="font-size:0.8rem;">Desc: $<span id="modal-discount-amt">0.00</span></span>
+                    </div>
+                </div>
+
+                <div class="modal-summary-side product-summary-side">
+                    <div class="summary-box">
+                        <p>Base: <span id="modal-base-price">$0.00</span></p>
+                        <p>Extras: <span id="modal-modifier-adjust">+$0.00</span></p>
+                        <p>Desc: <span id="modal-discount-applied">-$0.00</span></p>
+                        <hr>
+                        <h3 class="total-modal-price"><span id="modal-final-price">$0.00</span></h3>
+                    </div>
+
+                    <div class="quantity-controls">
+                        <h4>Cantidad:</h4>
+                        <div class="qty-btn-group">
+                            <button class="qty-btn" onclick="updateModalQuantity(-1)">-</button>
+                            <input type="number" id="modal-quantity-input" value="1" min="1" readonly>
+                            <button class="qty-btn" onclick="updateModalQuantity(1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-main btn-add-to-cart" onclick="addToCart()">Añadir</button>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closeProductModal()">✖</button>
+        </div>
+    </div>

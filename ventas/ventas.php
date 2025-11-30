@@ -91,7 +91,6 @@ if (!empty($conteo_categorias)) {
     <title>Nueva Venta</title>
     <link rel="stylesheet" href="../homepage/css/styleshome.css"> 
     <link rel="stylesheet" href="css/ventasStyle.css">
-    
     <script>
         const globalExtras = <?php echo json_encode($extras_db); ?>;
         const globalFlavors = <?php echo json_encode($sabores_db); ?>;
