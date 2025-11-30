@@ -125,7 +125,7 @@ body::before {
 }
 
 .menu-btn {
-    display: none;
+    display: flex;
 }
 
 

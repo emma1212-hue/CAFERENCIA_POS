@@ -23,9 +23,9 @@ $rol = $_SESSION['rol'];
       
         <div class="header">
             <div class="header-left">
-                <button class="icon-btn menu-btn" onclick="toggleSidebar()">
+  <!--              <button class="icon-btn menu-btn" onclick="toggleSidebar()">
 
-                </button>
+                </button>-->
              <h1>CAFÉrencia - PUNTO DE VENTA</h1>
             </div>
             <div class="header-icons">

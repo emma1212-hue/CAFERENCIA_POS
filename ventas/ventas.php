@@ -88,7 +88,7 @@ if (!empty($conteo_categorias)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Punto de Venta</title>
+    <title>Nueva Venta</title>
     <link rel="stylesheet" href="../homepage/css/styleshome.css"> 
     <link rel="stylesheet" href="css/ventasStyle.css">
     

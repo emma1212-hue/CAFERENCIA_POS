@@ -155,58 +155,60 @@ while ($row = $resDetalle->fetch_assoc()) {
     $pdf->Ln(1); // Espacio entre productos
 }
 
-$pdf->Ln(1);
-$pdf->Cell(72, 0, '', 'T');
-$pdf->Ln(2);
+$pdf->Ln(1); // Espacio mínimo después de la línea
+$pdf->Cell(72, 0, '', 'T'); 
+$pdf->Ln(1); // Espacio mínimo antes de totales
 
-// --- TOTALES Y DESGLOSE ---
+// --- TOTALES COMPACTOS ---
 $totalCobrado = floatval($venta['totalVenta']);
-$subtotalReal = $totalCobrado + $sumaDescuentos; // Reconstruimos el precio original
+$subtotalReal = $totalCobrado + $sumaDescuentos; 
 
-// Si hay descuentos, mostramos el desglose completo
+// 1. Subtotales (Fuente pequeña y altura de celda 3.5)
 if ($sumaDescuentos > 0) {
-    $pdf->SetFont('Arial', '', 8);
-    $pdf->Cell(45, 4, 'Subtotal:', 0, 0, 'R');
-    $pdf->Cell(27, 4, '$' . number_format($subtotalReal, 2), 0, 1, 'R');
+    $pdf->SetFont('Arial', '', 7);
+    $pdf->Cell(45, 3.5, 'Subtotal:', 0, 0, 'R');
+    $pdf->Cell(27, 3.5, '$' . number_format($subtotalReal, 2), 0, 1, 'R');
 
-    $pdf->SetFont('Arial', '', 8);
-    $pdf->Cell(45, 4, 'Ahorro:', 0, 0, 'R');
-    $pdf->Cell(27, 4, '-$' . number_format($sumaDescuentos, 2), 0, 1, 'R');
+    $pdf->Cell(45, 3.5, 'Ahorro:', 0, 0, 'R');
+    $pdf->Cell(27, 3.5, '-$' . number_format($sumaDescuentos, 2), 0, 1, 'R');
 }
 
-// TOTAL FINAL
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(45, 5, 'TOTAL:', 0, 0, 'R');
-$pdf->SetFont('Arial', 'B', 11);
-$pdf->Cell(27, 5, '$' . number_format($totalCobrado, 2), 0, 1, 'R');
+// 2. TOTAL (Un poco más grande, pero pegado a lo anterior)
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->Cell(45, 6, 'TOTAL:', 0, 0, 'R'); // Altura 6 para destacar
+$pdf->Cell(27, 6, '$' . number_format($totalCobrado, 2), 0, 1, 'R');
 
-$pdf->SetFont('Arial', '', 8);
-$pdf->Cell(45, 5, 'Pago (' . $venta['tipoPago'] . '):', 0, 0, 'R');
-$pdf->Cell(27, 5, '$' . number_format($totalCobrado, 2), 0, 1, 'R'); 
+// 3. DATOS DE PAGO (Pegados al total, fuente normal)
+$pdf->SetFont('Arial', '', 7);
+
+// Renglón Método de Pago
+$pdf->Cell(45, 4, utf8_decode('Pago (' . $venta['tipoPago'] . '):'), 0, 0, 'R');
+$pdf->Cell(27, 4, '$' . number_format($totalCobrado, 2), 0, 1, 'R'); 
+
+// Renglón Efectivo/Cambio (Si aplica)
 if ($venta['tipoPago'] == 'Efectivo' && isset($_GET['recibido'])) {
-    
     $recibido = floatval($_GET['recibido']);
-    // El cambio lo podemos calcular aquí o recibirlo, recibirlo es más seguro visualmente
     $cambio = isset($_GET['cambio']) ? floatval($_GET['cambio']) : ($recibido - $totalCobrado);
 
-    // Renglón de Recibido
-    $pdf->Cell(45, 5, 'Efectivo Recibido:', 0, 0, 'R');
-    $pdf->Cell(27, 5, '$' . number_format($recibido, 2), 0, 1, 'R');
+    $pdf->Cell(45, 4, 'Efectivo:', 0, 0, 'R');
+    $pdf->Cell(27, 4, '$' . number_format($recibido, 2), 0, 1, 'R');
 
-    // Renglón de Cambio
-    $pdf->SetFont('Arial', 'B', 8); // Negrita para resaltar el cambio
-    $pdf->Cell(45, 5, 'Cambio:', 0, 0, 'R');
-    $pdf->Cell(27, 5, '$' . number_format($cambio, 2), 0, 1, 'R');
+    $pdf->SetFont('Arial', 'B', 7); // Negrita para el cambio
+    $pdf->Cell(45, 4, 'Cambio:', 0, 0, 'R');
+    $pdf->Cell(27, 4, '$' . number_format($cambio, 2), 0, 1, 'R');
 }
-// ----------------------------------------------------
 
-$pdf->Ln(5);
+// --- PIE DE PÁGINA COMPACTO ---
+$pdf->Ln(4); // Solo un pequeño espacio antes del pie
 
-// --- PIE ---
 $pdf->SetFont('Arial', '', 8);
-$pdf->Cell(72, 4, utf8_decode('¡Gracias por su preferencia!'), 0, 1, 'C');
-$pdf->Cell(72, 4, utf8_decode('Síguenos en @caferencia_iguala'), 0, 1, 'C');
-$pdf->Ln(3);
+$pdf->Cell(72, 3.5, utf8_decode('¡Gracias por su preferencia!'), 0, 1, 'C');
+
+$pdf->SetFont('Arial', 'B', 8); // Redes sociales en negrita destacan más
+$pdf->Cell(72, 3.5, utf8_decode('@caferencia_iguala'), 0, 1, 'C');
+
+$pdf->Ln(2); // Mínimo espacio final
+$pdf->SetFont('Arial', 'I', 6);
 //$pdf->SetFont('Arial', 'I', 6);
 //$pdf->Cell(72, 4, 'Sistema v1.0', 0, 1, 'C');
 

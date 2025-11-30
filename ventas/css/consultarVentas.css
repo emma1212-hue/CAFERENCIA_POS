@@ -1,368 +1,375 @@
-/* consultarVentas.css - estilos extraídos de consultarVentas.php */
+/* * Archivo: ventas/css/consultarVentas.css 
+ * Estilos Corregidos: Alineación y Altura Uniforme
+ */
 
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
 :root {
-    --brown-dark: #4a3b30; /* principal */
-    --brown-mid: #7d6a59; /* secundario */
-    --brown-muted: #a89b8f; /* tonos medios */
-    --accent: #d7c5b2; /* acento */
-    --bg: #f4e1d2; /* fondo suave */
-    --text: #2b2b2b;
-}
-
-
-.subtitle {
-    margin: 6px 0 0 0;
-    font-size: inherit;
-    color: var(--brown-muted);
-    font-style: normal;
-    font-weight: 500;
+    --cafe-oscuro: #4a3b30;
+    --cafe-medio: #7d6a59;
+    --cafe-claro: #a89b8f;
+    --crema-claro: #d7c5b2;
+    --crema-fondo: #f4e1d2;
+    --blanco: #ffffff;
+    --texto: #2b2b2b;
+    --alerta: #c0392b;
+    
+    /* Variable para asegurar que todo mida lo mismo */
+    --altura-controles: 42px; 
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--crema-fondo);
+    color: var(--texto);
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     font-size: 15px;
 }
 
-/* Estilos específicos para la vista de consulta de ventas */
 .container {
-    max-width: 1200px;
-    margin: 18px auto;
-    padding: 16px;
+    max-width: 1250px; /* Un poco más ancho para que quepa todo en una línea */
+    margin: 20px auto;
+    padding: 20px;
 }
 
+/* --- ENCABEZADO --- */
 .header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
     justify-content: center;
     position: relative;
-}
-
-.header h1 {
-    font-size: 2.8rem;
-    margin: 0;
-    color: var(--brown-dark);
-    font-family: 'Great Vibes', Georgia, 'Times New Roman', serif;
-    font-style: italic;
-    line-height: 1.05;
-    letter-spacing: 0.5px;
-    display: inline-flex;
-    align-items: center;
-}
-
-.title-icon {
-    width: 1.2em;
-    height: 1.2em;
-    display: inline-block;
-    margin-right: 0.45rem;
-    color: var(--brown-dark);
-}
-
-.icon-btn.menu-btn {
-    background: transparent;
-    border: none;
-    color: var(--brown-dark);
-    font-size: 1.1rem;
-    cursor: pointer;
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3;
-}
-
-.controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: stretch;
-    margin-bottom: 12px;
-}
-
-.search-input {
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--brown-muted);
-    min-width: 200px;
-    background: #fff;
-    font-size: inherit;
-}
-
-/* Contenedor para placeholder animado */
-/* (removed animated placeholder — using native input placeholder instead) */
-
-.filter-input {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid var(--brown-muted);
-    background: #fff;
-    font-size: inherit;
-}
-
-.btn {
-    padding: 12px 18px;
-    border-radius: 10px;
-    border: none;
-    background: var(--brown-dark);
-    color: #fff;
-    cursor: pointer;
-    font-size: inherit;
-    font-weight: 600;
-}
-
-.btn:active {
-    transform: translateY(1px);
-}
-
-.btn-secondary {
-    background: var(--brown-mid);
-}
-
-/* Icono dentro de los botones */
-.btn .btn-icon,
-.btn-icon {
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 0.5rem;
-    color: inherit;
-}
-
-.btn svg { 
-    width: 1em;
-    height: 1em;
-}
-
-/* Ajustes visuales de la tabla para mejor legibilidad */
-.table-wrap {
-    width: 100%;
-    overflow: auto;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 15px 20px;
     border-radius: 12px;
-}
-
-table.sales-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 2px;
-    min-width: 0;
-}
-
-table.sales-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    padding: 14px 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    font-size: 0.85rem;
-}
-
-/* Centrar contenido de la tabla (cabeceras y celdas) */
-table.sales-table thead th,
-table.sales-table tbody td {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
 }
 
-table.sales-table tbody td {
-    padding: 16px 12px;
-    background: #fff;
-    vertical-align: middle;
+.header h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.8rem;
+    margin: 0;
+    color: var(--cafe-oscuro);
+    line-height: 1;
 }
 
-table.sales-table tbody tr {
-    transition: transform .09s ease, box-shadow .09s ease;
+.subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--cafe-medio);
+    font-weight: 500;
 }
 
-table.sales-table tbody tr:hover {
-    transform: translateY(-1.5px);
-    box-shadow: 0 3px 8px rgba(74,59,48,0.05);
+.icon-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 2px solid var(--cafe-oscuro);
+    color: var(--cafe-oscuro);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding-bottom: 3px;
+    z-index: 10;
 }
 
-table.sales-table tbody tr td:first-child {
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
+.icon-btn:hover {
+    background: var(--cafe-oscuro);
+    color: var(--blanco);
 }
 
-/* Destacar columna de IDs */
-table.sales-table thead th:first-child,
-table.sales-table tbody td:first-child {
+/* --- CONTROLES DE FILTRO (La parte importante) --- */
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    /* 'wrap' permite que bajen si la pantalla es muy chica, pero intentaremos que no */
+    flex-wrap: wrap; 
+    align-items: flex-end; /* Alinea todo a la línea inferior */
+    
+    background: var(--blanco);
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(74, 59, 48, 0.08);
+    border: 1px solid rgba(74, 59, 48, 0.1);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    /* Flex-grow 1 hace que se estiren para llenar huecos, pero min-width evita que se aplasten */
+    flex: 1; 
+    min-width: 140px; 
+}
+
+/* El buscador un poco más ancho que las fechas */
+.control-group:first-child {
+    flex: 1.5; 
+    min-width: 200px;
+}
+
+.control-group label {
+    font-family: "Segoe UI", sans-serif;
     font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--cafe-oscuro);
+    margin-bottom: 5px; /* Pegado al input */
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
-table.sales-table tbody tr td:last-child {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+/* --- INPUTS Y SELECTS (Altura Forzada) --- */
+.control-group input, 
+.control-group select {
+    width: 100%;
+    height: var(--altura-controles) !important; /* 42px FORZADO */
+    padding: 0 12px;
+    
+    border: 1px solid var(--cafe-claro); /* Borde visible */
+    border-radius: 8px;
+    
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--texto);
+    background: #fafafa;
+    
+    box-sizing: border-box; /* Incluye borde y padding en la altura */
+    transition: all 0.3s ease;
 }
 
-table.sales-table tbody tr:nth-child(even) td {
-    background: #fbf7f4;
+.control-group input:focus, 
+.control-group select:focus {
+    outline: none;
+    border-color: var(--cafe-medio);
+    background: var(--blanco);
+    box-shadow: 0 0 0 3px rgba(125, 106, 89, 0.15);
 }
 
-table.sales-table tbody tr:nth-child(odd) td {
-    background: #ffffff;
-}
-
-/* Header without gradient: solid accent color for better clarity */
-table.sales-table thead th {
-    background: var(--accent);
-    color: var(--brown-dark);
-    border: 0;
-}
-
-/* Filters panel to group options and improve contrast */
-.filters-panel {
-    background: #ffffff;
-    padding: 10px;
-    border-radius: 10px;
+/* --- BOTONES (Misma altura y alineación) --- */
+.btn-group {
     display: flex;
     gap: 10px;
-    align-items: center;
-    box-shadow: 0 4px 12px rgba(74,59,48,0.06);
-    width: 100%;
-    box-sizing: border-box;
+    height: var(--altura-controles) !important; /* 42px FORZADO */
+    flex: 0 0 auto; /* No permitir que se encoja ni crezca */
+    align-items: flex-end; /* Asegura alineación */
 }
 
-.filters-panel label {
-    color: var(--brown-dark);
+.btn {
+    padding: 0 25px;
+    border: 1px solid transparent; /* Truco para igualar pixeles con inputs */
+    border-radius: 8px;
+    
+    font-size: 0.95rem;
     font-weight: 600;
-    font-size: inherit;
-}
-
-.filters-panel .filter-input,
-.filters-panel select {
-    background: #fff;
-    color: var(--text);
-}
-
-.filters-actions {
+    letter-spacing: 0.5px;
+    
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 100% !important; /* Llena el contenedor */
     display: flex;
-    gap: 8px;
     align-items: center;
+    justify-content: center;
+    color: white;
+    box-sizing: border-box;
+    white-space: nowrap;
 }
 
-/* Small screens: keep cards clean */
-@media (max-width:520px) {
-    .controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-input,
-    .filter-input {
-        width: 100%;
-    }
-
-    .btn {
-        width: 100%;
-    }
+.btn-search {
+    background-color: var(--cafe-medio);
+}
+.btn-search:hover {
+    background-color: var(--cafe-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(74, 59, 48, 0.2);
 }
 
-.table-wrap {
+.btn-reset {
+    background-color: var(--cafe-claro); 
+}
+.btn-reset:hover {
+    background-color: #948275;
+    transform: translateY(-2px);
+}
+
+/* --- TABLA PRINCIPAL --- */
+.table-wrapper {
+    background: var(--blanco);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+.sales-table {
     width: 100%;
-    overflow: auto;
-    background: transparent;
+    border-collapse: collapse;
+    min-width: 700px;
 }
 
-/* Mobile card view */
+.sales-table thead {
+    background-color: var(--cafe-oscuro);
+    color: var(--blanco);
+}
+
+.sales-table th {
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.sales-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    color: var(--texto);
+    vertical-align: middle;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.sales-table td:last-child {
+    text-align: right;
+    padding-right: 25px;
+    font-weight: 700;
+    color: var(--cafe-oscuro);
+}
+
+.sales-table tbody tr {
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.sales-table tbody tr:hover {
+    background-color: #fbf7f4;
+}
+
+/* --- TARJETAS MÓVILES --- */
 .cards {
     display: none;
-    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .sale-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-    border-left: 4px solid var(--accent);
+    background: var(--blanco);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--cafe-medio);
+    cursor: pointer;
 }
 
 .card-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
-}
-
-.card-label {
-    color: var(--brown-muted);
+    margin-bottom: 8px;
     font-size: 0.9rem;
 }
 
-/* En las tarjetas, el valor del primer campo (idVenta) se muestra en negrita */
-.sale-card .card-row:first-child div:nth-child(2) {
+.total-row {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    margin-top: 5px;
     font-weight: 700;
-    color: var(--brown-dark);
+    font-size: 1.1rem;
+    color: var(--cafe-oscuro);
 }
 
-/* Hover/interactive effect for cards (only on hover-capable devices) */
-.sale-card {
-    transition: transform .16s ease, box-shadow .16s ease;
-    will-change: transform;
-    cursor: default;
+/* --- MODAL --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    padding-top: 60px;
 }
 
-@media (hover: hover) {
-    .sale-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 28px rgba(74,59,48,0.12);
-        cursor: pointer;
-    }
-}
-/* Mantener solo el efecto de elevación; no cambiar color en hover */
-
-/* Responsive breakpoints */
-@media (max-width:900px) {
-    table.sales-table {
-        display: none;
-    }
-
-    .cards {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .controls {
-        gap: 8px;
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .header h1 {
-        font-size: 1.8rem;
-    }
-
-    .search-input {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .filters-panel {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .filters-panel .filter-input,
-    .filters-panel select {
-        width: 100%;
-    }
-
-    .filters-actions {
-        justify-content: flex-end;
-    }
+.modal-content {
+    background-color: var(--blanco);
+    margin: 2% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideDown 0.3s ease;
 }
 
-@media (min-width:901px) {
-    .cards {
-        display: none;
-    }
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
+.close-btn {
+    position: absolute;
+    top: 20px; right: 25px;
+    font-size: 28px;
+    color: var(--cafe-claro);
+    cursor: pointer;
+    line-height: 1;
+}
+.close-btn:hover { color: var(--alerta); }
+
+/* --- TABLA DETALLE (MODAL) --- */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.detail-table th {
+    background-color: var(--crema-fondo);
+    color: var(--cafe-oscuro);
+    font-weight: 700;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.9rem;
+    border-bottom: 2px solid var(--crema-claro);
+}
+
+.detail-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--texto);
+    text-align: right;
+    font-size: 0.9rem;
+}
+
+.detail-table td:first-child { text-align: left; }
+.detail-table td:nth-child(2) { text-align: center; }
+
+/* --- RESPONSIVO --- */
+@media (max-width: 900px) {
+    .controls { flex-wrap: wrap; }
+    .control-group { min-width: 45%; }
+    .btn-group { width: 100%; margin-top: 10px; } 
+    .btn { flex: 1; }
+}
+
+@media (max-width: 768px) {
+    .sales-table { display: none; }
+    .cards { display: block; }
+    .controls { flex-direction: column; align-items: stretch; gap: 10px; }
+    .header h1 { font-size: 2rem; }
+    .header { padding-left: 50px; justify-content: flex-end; text-align: right; }
+}
