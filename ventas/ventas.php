@@ -187,6 +187,9 @@ if (!empty($conteo_categorias)) {
                     <button class="payment-btn" onclick="openPaymentModal('Efectivo')">💵 Efectivo</button>
                     <button class="payment-btn" onclick="openPaymentModal('Transferencia')">📱 Transferencia</button>
                 </div>
+                <div style="margin-top: auto; padding-top: 15px;">
+                    <button id="btn-clear-cart" class="payment-btn" style="background-color: var(--alert); color: white; display: none;" onclick="cancelSale()">Cancelar venta</button>
+                </div>
             </div>
         </div>
     </div>
@@ -220,7 +223,7 @@ if (!empty($conteo_categorias)) {
 
                     <div class="modifier-group">
                         <h4>Descuento (%):</h4>
-                        <input type="number" id="modal-discount-input" min="0" max="100" placeholder="%" class="input-discount">
+                        <input type="number" id="modal-discount-input" min="0"max="100" placeholder="%" class="input-discount" oninput="updateProductPrice()" onchange="updateProductPrice()">
                         <span class="discount-value-display" style="font-size:0.8rem;">Desc: $<span id="modal-discount-amt">0.00</span></span>
                     </div>
                 </div>
@@ -288,10 +291,11 @@ if (!empty($conteo_categorias)) {
                     </div>
                     <div class="action-buttons modal-actions">
                         <button class="btn-main btn-pay" onclick="processPayment()">Cobrar</button>
-                        <button class="btn-secondary btn-cancel" onclick="closeModal()">Cerrar</button>
+                        <button class="btn-secondary btn-cancel" onclick="cancelSale()">Cancelar venta</button>
                     </div>
                 </div>
             </div>
+            <button class="modal-close-btn" onclick="closeModal()">✖</button>
         </div>
     </div>
 
@@ -302,27 +306,42 @@ if (!empty($conteo_categorias)) {
         let lineIdCounter = 1;
         let currentProduct = null;
 
-        // --- INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCart();
-            filterProducts('all');
-            
-            // Listeners globales
-            document.getElementById('modal-discount-input').addEventListener('input', updateProductPrice);
-            
-            // Listener Leche (Exclusivo)
-            document.querySelectorAll('#group-milk .mod-option').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    this.parentElement.querySelectorAll('.mod-option').forEach(s => s.classList.remove('active'));
-                    this.classList.add('active');
-                    if(currentProduct) {
-                        currentProduct.selectedModifiers['MilkBase'] = { value: this.dataset.modValue, adjust: 0 };
-                        updateProductPrice();
-                    }
+// --- INICIALIZACIÓN Y LISTENERS GLOBALES ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Cargar estado inicial
+        renderCart();
+        filterProducts('all');
+        
+        // 2. Listener para el Descuento (Detectar escritura en tiempo real)
+        const discountInput = document.getElementById('modal-discount-input');
+        if (discountInput) {
+            discountInput.addEventListener('input', updateProductPrice);
+            // Agregamos 'change' también para asegurar que capture al perder el foco
+            discountInput.addEventListener('change', updateProductPrice);
+        }
+        
+        // 3. Listener para el Grupo de Leche (Botones estáticos en HTML)
+        // Nota: Los listeners de Extras y Tamaños se agregan dinámicamente cuando se crean.
+        // Pero la Leche ya existe en el HTML, así que debemos activarla aquí.
+        document.querySelectorAll('#group-milk .mod-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // A. Visual: Quitar active a los hermanos y ponerlo a este
+                this.closest('.modifier-group').querySelectorAll('.mod-option').forEach(sibling => {
+                    sibling.classList.remove('active');
                 });
+                this.classList.add('active');
+
+                // B. Lógica: Actualizar el objeto producto y recalcular precio
+                if (currentProduct) {
+                    currentProduct.selectedModifiers['MilkBase'] = { 
+                        value: this.dataset.modValue, 
+                        adjust: parseFloat(this.dataset.priceAdjust) || 0 
+                    };
+                    updateProductPrice(); // ¡Importante llamar al cálculo!
+                }
             });
         });
-
+    });
         // --- FILTROS Y BÚSQUEDA ---
         function filterProducts(catId) {
             document.querySelectorAll('.category-tabs .tab').forEach(t => {
@@ -374,7 +393,7 @@ if (!empty($conteo_categorias)) {
             document.getElementById('group-flavors').style.display = isTisana ? 'block' : 'none';
             
             // Leche (Ocultar si es Comida, Extra o Tisana)
-            const showMilk = !(catId == 1 || catId == 6 || isTisana);
+            const showMilk = !(catId == 5 || catId == 6 || isTisana);
             document.getElementById('group-milk').style.display = showMilk ? 'block' : 'none';
             
             // Extras (Ocultar si es Tisana)
@@ -555,9 +574,9 @@ function selectFinalProduct(data) {
             let totalMods = Object.values(currentProduct.selectedModifiers).reduce((acc, m) => acc + m.adjust, 0);
             let unitTotal = currentProduct.basePrice + totalMods;
             
-            // Descuento
-            const discP = parseFloat(document.getElementById('modal-discount-input').value) || 0;
-            currentProduct.discountPercentage = discP;
+            const discInput = document.getElementById('modal-discount-input');
+            const discP = parseFloat(discInput.value) || 0;
+            currentProduct.discountPercentage = discP; // Guardar porcentaje en el producto
             const lineTotalNoDisc = unitTotal * currentProduct.quantity;
             const discAmt = lineTotalNoDisc * (discP / 100);
             const finalTotal = lineTotalNoDisc - discAmt;
@@ -569,7 +588,60 @@ function selectFinalProduct(data) {
             document.getElementById('modal-final-price').textContent = `$${finalTotal.toFixed(2)}`;
         }
 
-        // --- CARRITO ---
+ function updateTotals() {
+            let grossSubtotal = 0; // Subtotal sin descuentos
+            let totalDiscountAmt = 0; // Dinero ahorrado
+            
+            // Si no hay items, todo se queda en 0
+            if (cartItems.length > 0) {
+                cartItems.forEach(item => {
+                    // 1. Precio Unitario Base (DB + Extras)
+                    let modsPrice = 0;
+                    for (const key in item.selectedModifiers) {
+                        modsPrice += parseFloat(item.selectedModifiers[key].adjust) || 0;
+                    }
+                    const unitPriceOriginal = item.basePrice + modsPrice; 
+                    
+                    // 2. Precio Total Línea (Original)
+                    const lineGrossTotal = unitPriceOriginal * item.quantity;
+                    
+                    // 3. Calcular Descuento
+                    const discPerc = parseFloat(item.discountPercentage) || 0;
+                    const lineDiscountAmt = lineGrossTotal * (discPerc / 100);
+                    
+                    // 4. Sumar
+                    grossSubtotal += lineGrossTotal;
+                    totalDiscountAmt += lineDiscountAmt;
+                });
+            }
+
+            // 5. Total Neto
+            const finalTotal = grossSubtotal - totalDiscountAmt;
+
+            // --- ACTUALIZAR PANEL PRINCIPAL (Siempre) ---
+            document.getElementById('cart-subtotal').textContent = `$${grossSubtotal.toFixed(2)}`;
+            document.getElementById('cart-discount').textContent = `-$${totalDiscountAmt.toFixed(2)}`;
+            document.getElementById('cart-total').textContent = `$${finalTotal.toFixed(2)}`;
+
+            // --- ACTUALIZAR MODAL DE PAGO (Solo si está abierto) ---
+            if (document.getElementById('payment-modal').style.display === 'flex') {
+                document.getElementById('subtotal-modal').textContent = `$${grossSubtotal.toFixed(2)}`;
+                document.getElementById('discount-modal').textContent = `-$${totalDiscountAmt.toFixed(2)}`;
+                
+                const payTotalEl = document.getElementById('pay-total-val');
+                if(payTotalEl) payTotalEl.textContent = `$${finalTotal.toFixed(2)}`;
+                
+                // Actualizar input de efectivo si no se ha tocado
+                const payInput = document.getElementById('pay-input');
+                const method = document.getElementById('pay-method-display').textContent;
+                if(payInput && method === 'Efectivo') {
+                    // Solo actualizamos el input si el usuario no ha escrito algo diferente al total anterior
+                    // (Opcional: forzar actualización siempre para evitar errores de cambio)
+                    payInput.value = finalTotal.toFixed(2);
+                    payInput.dispatchEvent(new Event('input')); // Recalcular cambio
+                }
+            }
+        }               // --- CARRITO ---
         function addToCart() {
             if(!currentProduct) return;
             
@@ -643,61 +715,72 @@ function openProductModalForEdit(lineId) {
             modal.style.display = 'flex';
         }
         
-        function renderCart() {
-            const list = document.getElementById('cart-list-container');
-            let html = '';
-            let sub = 0; 
+function renderCart() {
+            // 1. MOSTRAR/OCULTAR BOTÓN LIMPIAR (AL INICIO)
+            const btnClear = document.getElementById('btn-clear-cart');
+            if (btnClear) {
+                // Si hay items se muestra 'block', si no 'none'
+                btnClear.style.display = (cartItems.length > 0) ? 'block' : 'none';
+            }
+
+            const listContainer = document.getElementById('cart-list-container');
             
+            // CASO 1: Carrito Vacío
+            if (cartItems.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">El carrito está vacío.</p>';
+                updateTotals(); 
+                return; // Aquí se detenía el código antes
+            }
+
+            // CASO 2: Dibujar Items (Resto del código igual...)
+            let itemsHtml = '';
+            
+            // ... (bucle cartItems.forEach y generación de HTML) ...
             cartItems.forEach(item => {
-                const totalLine = item.finalPrice * item.quantity;
-                sub += totalLine;
+                // ... (tu lógica de renderizado existente) ...
                 
+                // (Solo para referencia, no cambies nada aquí adentro si ya funciona)
+                let modsPrice = 0;
+                for (const key in item.selectedModifiers) {
+                    modsPrice += parseFloat(item.selectedModifiers[key].adjust) || 0;
+                }
+                const unitPrice = item.basePrice + modsPrice;
+                const totalLineRaw = unitPrice * item.quantity;
+                const totalLineNet = totalLineRaw - (totalLineRaw * (item.discountPercentage / 100));
+
                 let mods = [];
                 for(const k in item.selectedModifiers) {
                     const mod = item.selectedModifiers[k];
-                    
-                    // LÓGICA DE LIMPIEZA VISUAL:
-                    // Si es Leche Base Y el valor es "Entera", NO mostrarlo.
-                    if (k === 'MilkBase' && mod.value === 'Entera') {
-                        continue; 
-                    }
-
-                    // Formato de texto
-                    if (mod.adjust > 0) {
-                        mods.push(`${mod.value} (+$${mod.adjust})`);
-                    } else {
-                        mods.push(mod.value);
-                    }
+                    if (k === 'MilkBase' && mod.value === 'Entera') continue;
+                    if (mod.adjust > 0) mods.push(`${mod.value} (+$${mod.adjust})`);
+                    else mods.push(mod.value);
                 }
-                const modStr = mods.length ? `<small style="color:#666">(${mods.join(', ')})</small>` : '';
-                
-                html += `
+                const modStr = mods.length ? `<div style="font-size:0.8rem; color:#777;">${mods.join(', ')}</div>` : '';
+
+                itemsHtml += `
                 <div class="cart-item clickable-edit" onclick="openProductModalForEdit(${item.lineId})">
                     <span class="cart-col-prod">${item.name} ${modStr}</span>
                     <span class="cart-col-qty">${item.quantity}</span>
-                    <span class="cart-col-desc">${item.discountPercentage}%</span>
-                    <span class="cart-col-total">$${totalLine.toFixed(2)}</span>
+                    <span class="cart-col-desc">${item.discountPercentage > 0 ? '-' + item.discountPercentage + '%' : '--'}</span>
+                    <span class="cart-col-total">$${totalLineNet.toFixed(2)}</span>
                     <button class="remove-btn" onclick="event.stopPropagation(); removeCartItem(${item.lineId})">✖</button>
                 </div>`;
             });
             
-            list.innerHTML = html || '<p style="text-align:center; padding:10px;">Vacío</p>';
-            
-            document.getElementById('cart-subtotal').textContent = `$${sub.toFixed(2)}`;
-            document.getElementById('cart-total').textContent = `$${sub.toFixed(2)}`;
+            listContainer.innerHTML = itemsHtml;
+            updateTotals(); 
         }
-
         function removeCartItem(id) {
             cartItems = cartItems.filter(i => i.lineId !== id);
             renderCart();
         }
 
-        // --- PAGO ---
+        //Pagoooooo
+
         function openPaymentModal(method) {
             if(cartItems.length === 0) { alert("Carrito vacío"); return; }
             const modal = document.getElementById('payment-modal');
             
-            // Copiar HTML
             document.getElementById('modal-cart-copy').innerHTML = document.getElementById('cart-list-container').innerHTML;
             const copy = document.getElementById('modal-cart-copy');
             copy.querySelectorAll('.remove-btn').forEach(b => b.remove());
@@ -705,37 +788,49 @@ function openProductModalForEdit(lineId) {
 
             document.getElementById('pay-method-display').textContent = method;
             
-            // --- CORRECCIÓN AQUÍ: Obtener y asignar Subtotal y Descuentos ---
-            const subtotalTxt = document.getElementById('cart-subtotal').textContent;
-            const discountTxt = document.getElementById('cart-discount').textContent;
+            // --- CORRECCIÓN MATEMÁTICA ---
             const totalTxt = document.getElementById('cart-total').textContent;
-
-            document.getElementById('subtotal-modal').textContent = subtotalTxt; // <--- ESTA FALTABA
-            document.getElementById('discount-modal').textContent = discountTxt; // <--- ESTA TAMBIÉN ES IMPORTANTE
+            // Limpiar todo lo que no sea número o punto (quita $, espacios, comas)
+            const totNum = parseFloat(totalTxt.replace(/[^0-9.]/g, '')); 
+            
             document.getElementById('pay-total-val').textContent = totalTxt;
-            // ---------------------------------------------------------------
             
             const areaCash = document.querySelector('.cash-tender-area');
             areaCash.style.display = (method === 'Efectivo') ? 'block' : 'none';
             
+            // Resetear cambio visualmente
+            document.getElementById('pay-change').textContent = "$0.00";
+
             if(method === 'Efectivo') {
-                const totNum = parseFloat(totalTxt.replace('$',''));
-                document.getElementById('pay-input').value = totNum.toFixed(2);
-                document.getElementById('pay-input').oninput = function() {
+                const input = document.getElementById('pay-input');
+                // Poner el total por defecto para pago exacto
+                input.value = totNum.toFixed(2);
+                
+                // Función de cálculo robusta
+                input.oninput = function() {
                     const val = parseFloat(this.value) || 0;
-                    document.getElementById('pay-change').textContent = `$${Math.max(0, val - totNum).toFixed(2)}`;
+                    const cambio = val - totNum;
+                    // Mostrar cambio solo si es positivo, si falta dinero mostrar $0.00 o negativo
+                    document.getElementById('pay-change').textContent = `$${Math.max(0, cambio).toFixed(2)}`;
                 };
+                // Calcular una vez al abrir para que coincida con el valor por defecto
+                input.dispatchEvent(new Event('input'));
             }
             modal.style.display = 'flex';
+            
+            // Asegurar que los totales estén frescos
+            updateTotals();
         }
-
         function closeModal() {
             document.getElementById('payment-modal').style.display = 'none';
         }
 
       function processPayment() {
             const method = document.getElementById('pay-method-display').textContent;
-            const total = parseFloat(document.getElementById('pay-total-val').textContent.replace('$',''));
+            
+            // 1. Obtener el total limpio (quitando $ y comas si las hubiera)
+            const totalString = document.getElementById('pay-total-val').textContent;
+            const total = parseFloat(totalString.replace(/[^0-9.]/g, ''));
             
             // Validación básica de efectivo
             if(method === 'Efectivo') {
@@ -745,20 +840,17 @@ function openProductModalForEdit(lineId) {
 
             if(confirm("¿Confirmar venta?")) {
                 
-                // Preparar el paquete de datos
                 const saleData = {
-                    items: cartItems, // Enviamos el array completo del carrito
+                    items: cartItems, 
                     total: total,
                     method: method
                 };
 
-                // Bloquear botón para evitar doble click
                 const btnPay = document.querySelector('.btn-pay');
                 const originalText = btnPay.textContent;
                 btnPay.disabled = true;
-                btnPay.textContent = "Procesando...";
+                btnPay.textContent = "Guardando...";
 
-                // ENVIAR AL BACKEND
                 fetch('phps/guardar_venta.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -767,23 +859,37 @@ function openProductModalForEdit(lineId) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert("Venta Guardada! Ticket #" + data.idVenta);
+                        alert("Venta realizada con Éxito! Ticket #" + data.idVenta);
                         
-                        // Limpiar carrito y cerrar modal
+                        // --- CORRECCIÓN AQUÍ: Variables consistentes ---
+                        let paramsPago = "";
+                        
+                        if (method === 'Efectivo') {
+                            // Usamos 'recibido' en español consistentemente
+                            const recibido = document.getElementById('pay-input').value || 0;
+                            // Limpiamos el texto del cambio para obtener solo el numero
+                            const cambioTexto = document.getElementById('pay-change').textContent;
+                            const cambio = cambioTexto.replace(/[^0-9.]/g, '');
+                            
+                            // Construimos la URL usando las variables correctas
+                            paramsPago = `&recibido=${recibido}&cambio=${cambio}`;
+                        }
+                        // -----------------------------------------------
+                        
+                        const urlTicket = `phps/generar_ticket.php?id=${data.idVenta}${paramsPago}`;
+                        window.open(urlTicket, '_blank');
+                        
                         cartItems = [];
                         lineIdCounter = 1;
                         renderCart();
                         closeModal();
-                        
-                        // Opcional: Abrir ticket para imprimir
-                        // window.open('phps/ticket.php?id=' + data.idVenta, '_blank');
                     } else {
                         alert("Error: " + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert("Error de red o servidor."+error);
+                    alert("Error de comunicación: " + error.message);
                 })
                 .finally(() => {
                     btnPay.disabled = false;
