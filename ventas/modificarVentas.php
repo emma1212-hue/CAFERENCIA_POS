@@ -123,7 +123,6 @@ if (!empty($conteo_categorias)) {
 ?>
 
 <!DOCTYPE html>
-<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -387,7 +386,7 @@ if (!empty($conteo_categorias)) {
 
     <!-- Modal Catálogo de Productos para Agregar -->
     <div id="catalogModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 850px; max-height: 90vh; overflow-y: auto; background: white; border-radius: 12px; padding: 25px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15); position: relative;">
+        <div class="modal-content" style="max-width: 850px; max-height: 90vh; overflow-y: auto; background: white; border-radius: 12px; padding: 25px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15); position: relative; z-index: 3501;">
             <span class="close-btn" onclick="closeCatalogModal()" style="position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 28px; color: var(--cafe-oscuro); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">&times;</span>
             
             <h2 style="color: var(--cafe-oscuro); margin: 0 0 20px 0; border-bottom: 2px solid var(--crema-claro); padding-bottom: 10px;">Agregar Producto a la Venta</h2>
@@ -559,10 +558,12 @@ if (!empty($conteo_categorias)) {
                         const precioUnitario = parseFloat(cells[2].textContent.trim().replace('$', ''));
                         const descuento = parseFloat(row.getAttribute('data-discount')) || 0;
                         const idProducto = parseInt(row.getAttribute('data-product-id')) || null;
+                        const idCategoria = parseInt(row.getAttribute('data-category-id')) || null;
                         
                         editProducts.push({
                             idDetalleVenta: index,
                             idProducto: idProducto,
+                            idCategoria: idCategoria,
                             nombre: nombreCompleto,
                             cantidad: cantidad,
                             precioUnitario: precioUnitario,
@@ -614,73 +615,131 @@ if (!empty($conteo_categorias)) {
         function editProductInVenta(index) {
             currentEditProductIndex = index;
             const prod = editProducts[index];
-            
+            // Inicializar objeto de producto actual
             currentProduct = {
                 id: prod.idDetalleVenta,
+                idProducto: prod.idProducto || null,
+                idCategoria: prod.idCategoria || null,
                 name: prod.nombre,
-                basePrice: prod.precioUnitario,
-                quantity: prod.cantidad,
+                basePrice: parseFloat(prod.precioUnitario) || 0,
+                quantity: prod.cantidad || 1,
                 selectedModifiers: prod.selectedModifiers || {},
-                discountPercentage: prod.descuento,
+                discountPercentage: prod.descuento || 0,
                 isEditing: true
             };
-            
+
             // Preparar el modal
             document.getElementById('modal-product-name').textContent = prod.nombre;
-            document.getElementById('modal-quantity-input').value = prod.cantidad;
-            document.getElementById('modal-discount-input').value = prod.descuento;
-            
-            // Mostrar opciones según corresponda
-            document.getElementById('group-size').style.display = 'none';
-            document.getElementById('group-milk').style.display = 'block';
-            document.getElementById('group-extras').style.display = globalExtras.length > 0 ? 'block' : 'none';
-            document.getElementById('group-flavors').style.display = globalFlavors.length > 0 ? 'block' : 'none';
-            
-            // Llenar opciones de extras
+            document.getElementById('modal-product-desc') && (document.getElementById('modal-product-desc').textContent = prod.descripcion || '');
+            document.getElementById('modal-quantity-input').value = currentProduct.quantity;
+            document.getElementById('modal-discount-input').value = currentProduct.discountPercentage;
+
+            // VISIBILIDAD: seguir la misma lógica que en ventas.php
+            const isTisana = prod.nombre.toLowerCase().includes('tisana');
+            document.getElementById('group-flavors').style.display = isTisana ? 'block' : 'none';
+
+            const showMilk = !(currentProduct.idCategoria == 5 || currentProduct.idCategoria == 6 || isTisana);
+            document.getElementById('group-milk').style.display = showMilk ? 'block' : 'none';
+
+            document.getElementById('group-extras').style.display = isTisana ? 'none' : (globalExtras && globalExtras.length > 0 ? 'block' : 'none');
+
+            // Renderizar extras y sabores
             const extrasContainer = document.getElementById('extras-container');
             extrasContainer.innerHTML = '';
-            globalExtras.forEach(extra => {
-                const isSelected = currentProduct.selectedModifiers['Extra_' + extra.idProducto] ? 'active' : '';
-                extrasContainer.innerHTML += `
-                    <button class="mod-option ${isSelected}" 
-                            data-mod-name="Extra" 
-                            data-mod-value="${extra.nombre}" 
-                            data-price-adjust="${extra.precioVenta}"
-                            onclick="toggleModifier(this, 'Extra_${extra.idProducto}', '${extra.nombre}', ${extra.precioVenta})">
-                        ${extra.nombre}
-                    </button>
-                `;
-            });
-            
-            // Llenar opciones de sabores
+            if (globalExtras && globalExtras.length > 0) {
+                globalExtras.forEach(extra => {
+                    const key = 'Extra_' + extra.idProducto;
+                    const isSelected = currentProduct.selectedModifiers && currentProduct.selectedModifiers[key] ? 'active' : '';
+                    const btn = document.createElement('button');
+                    btn.className = `mod-option ${isSelected}`;
+                    btn.dataset.modName = 'Extra';
+                    btn.dataset.modValue = extra.nombre;
+                    btn.dataset.priceAdjust = extra.precioVenta;
+                    btn.textContent = extra.nombre;
+                    btn.onclick = function() { toggleModifier(this, key, extra.nombre, extra.precioVenta); };
+                    extrasContainer.appendChild(btn);
+                });
+            }
+
             const flavorsContainer = document.getElementById('flavors-container');
             flavorsContainer.innerHTML = '';
-            globalFlavors.forEach(flavor => {
-                const isSelected = currentProduct.selectedModifiers['Flavor_' + flavor.idProducto] ? 'active' : '';
-                flavorsContainer.innerHTML += `
-                    <button class="mod-option ${isSelected}" 
-                            data-mod-name="Flavor" 
-                            data-mod-value="${flavor.nombre}" 
-                            data-price-adjust="${flavor.precioVenta}"
-                            onclick="toggleModifier(this, 'Flavor_${flavor.idProducto}', '${flavor.nombre}', ${flavor.precioVenta})">
-                        ${flavor.nombre}
-                    </button>
-                `;
-            });
-            
-            // Inicializar botones de leche seleccionados
+            if (globalFlavors && globalFlavors.length > 0) {
+                globalFlavors.forEach(flavor => {
+                    const key = 'Flavor_' + flavor.idProducto;
+                    const isSelected = currentProduct.selectedModifiers && currentProduct.selectedModifiers['Flavor'] && currentProduct.selectedModifiers['Flavor'].value === flavor.nombre ? 'active' : '';
+                    const btn = document.createElement('button');
+                    btn.className = `mod-option ${isSelected}`;
+                    btn.dataset.modName = 'Flavor';
+                    btn.dataset.modValue = flavor.nombre;
+                    btn.dataset.priceAdjust = flavor.precioVenta;
+                    btn.textContent = flavor.nombre;
+                    btn.onclick = function() { toggleModifier(this, 'Flavor_' + flavor.idProducto, flavor.nombre, flavor.precioVenta); };
+                    flavorsContainer.appendChild(btn);
+                });
+            }
+
+            // Inicializar botones de leche
             document.querySelectorAll('#group-milk .mod-option').forEach(btn => {
                 btn.classList.remove('active');
-                if (currentProduct.selectedModifiers['MilkBase'] && 
-                    currentProduct.selectedModifiers['MilkBase'].value === btn.dataset.modValue) {
+                if (currentProduct.selectedModifiers['MilkBase'] && currentProduct.selectedModifiers['MilkBase'].value === btn.dataset.modValue) {
                     btn.classList.add('active');
                 }
             });
-            
-            updateProductPrice();
-            document.getElementById('product-modal').style.display = 'flex';
-            
-            // El evento onclick para guardar cambios está en el HTML
+
+            // CARGAR TAMAÑOS (si existen) usando la misma API
+            const sizeGroup = document.getElementById('group-size');
+            sizeGroup.innerHTML = '<p>Cargando...</p>';
+            sizeGroup.style.display = 'block';
+
+            fetch(`phps/obtenerTamanios.php?name=${encodeURIComponent(prod.nombre)}&category=${currentProduct.idCategoria}`)
+                .then(r => r.json())
+                .then(variants => {
+                    if(!variants || variants.length === 0 || variants.error) {
+                        sizeGroup.style.display = 'none';
+                        updateProductPrice();
+                        document.getElementById('product-modal').style.display = 'flex';
+                        return;
+                    }
+
+                    sizeGroup.style.display = 'block';
+                    sizeGroup.innerHTML = '<h4>Tamaño:</h4>';
+                    const suffixes = ['Chico', 'Grande', 'Pequeño', 'Mediano', 'Vaso', 'Estándar', 'CH', 'G', 'M', 'Gde'];
+                    
+                    variants.forEach(v => {
+                        const btn = document.createElement('button');
+                        let disp = 'Estándar';
+                        for(const s of suffixes) { if(v.nombre.includes(s)) { disp = s; break; } }
+                        
+                        btn.textContent = `${disp} ($${parseFloat(v.precioVenta).toFixed(2)})`;
+                        btn.className = 'mod-option';
+                        btn.onclick = (e) => {
+                            e.target.parentElement.querySelectorAll('.mod-option').forEach(s=>s.classList.remove('active'));
+                            e.target.classList.add('active');
+                            // Actualizar basePrice con el precio del tamaño seleccionado
+                            currentProduct.basePrice = parseFloat(v.precioVenta);
+                            currentProduct.idProducto = v.idProducto;
+                            updateProductPrice();
+                        };
+                        sizeGroup.appendChild(btn);
+                    });
+
+                    // Seleccionar el primero por defecto
+                    const first = sizeGroup.querySelector('.mod-option');
+                    if(first) { 
+                        first.classList.add('active');
+                        currentProduct.basePrice = parseFloat(variants[0].precioVenta);
+                        currentProduct.idProducto = variants[0].idProducto;
+                    }
+                    
+                    document.getElementById('product-modal').style.display = 'flex';
+                    updateProductPrice();
+                })
+                .catch(e => {
+                    console.error('Error obtener tamanios', e);
+                    sizeGroup.style.display = 'none';
+                    document.getElementById('product-modal').style.display = 'flex';
+                    updateProductPrice();
+                });
         }
 
         function closeProductModal() {
@@ -726,15 +785,22 @@ if (!empty($conteo_categorias)) {
         }
 
         function addNewProductToVenta() {
+            console.log('addNewProductToVenta called');
             // Inicializar categorías en el modal del catálogo
             renderCatalogCategories();
             renderCatalogProducts('all');
-            document.getElementById('catalogModal').style.display = 'block';
+            const catalogModal = document.getElementById('catalogModal');
+            console.log('Catalog modal element:', catalogModal);
+            catalogModal.style.display = 'block';
+                catalogModal.style.zIndex = '3500';
+            console.log('Catalog modal display set to:', catalogModal.style.display);
         }
 
         function closeCatalogModal() {
-            document.getElementById('catalogModal').style.display = 'none';
+            const catalogModal = document.getElementById('catalogModal');
+            catalogModal.style.display = 'none';
             document.getElementById('searchProductInput').value = '';
+            console.log('Catalog modal closed');
         }
 
         function renderCatalogCategories() {
@@ -753,6 +819,7 @@ if (!empty($conteo_categorias)) {
         }
 
         function renderCatalogProducts(categoryFilter = 'all') {
+            console.log('renderCatalogProducts called with filter:', categoryFilter);
             let filtered = Object.values(productosUnicos);
             
             if (categoryFilter !== 'all') {
@@ -763,6 +830,8 @@ if (!empty($conteo_categorias)) {
             if (searchTerm) {
                 filtered = filtered.filter(p => p.nombre_base.toLowerCase().includes(searchTerm));
             }
+            
+            console.log('Filtered products count:', filtered.length);
             
             const container = document.getElementById('catalogProducts');
             
@@ -813,13 +882,15 @@ if (!empty($conteo_categorias)) {
         }
 
         function selectProductFromCatalog(idProducto, nombre, precio, idCategoria, descripcion) {
+            console.log('selectProductFromCatalog called with:', {idProducto, nombre, precio});
+            
             // Agregar el producto a la lista de edición
             const nuevoProducto = {
                 idDetalleVenta: Date.now(), // ID temporal único
-                idProducto: idProducto,
+                idProducto: parseInt(idProducto),
                 nombre: nombre,
                 cantidad: 1,
-                precioUnitario: precio,
+                precioUnitario: parseFloat(precio),
                 descuento: 0,
                 selectedModifiers: {},
                 discountPercentage: 0
@@ -827,6 +898,9 @@ if (!empty($conteo_categorias)) {
             
             editProducts.push(nuevoProducto);
             const nuevoIndex = editProducts.length - 1;
+            
+            console.log('Product added to editProducts, index:', nuevoIndex);
+            console.log('editProducts:', editProducts);
             
             // Abrir el modal de edición del producto recién agregado
             closeCatalogModal();

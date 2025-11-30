@@ -583,8 +583,12 @@ body {
     display: none !important;
 }
 
-#catalogModal.modal[style*="display: flex"] {
-    display: flex !important;
+#catalogModal.modal[style*="display: block"] {
+    display: block !important;
+}
+
+#catalogModal[style*="display: block"] {
+    display: block !important;
 }
 
 .category-tabs {
