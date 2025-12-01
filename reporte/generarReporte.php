@@ -41,9 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerrar_corte'])) {
     if ($stmt->execute()) {
         $mensaje = "<div class='alert success'>¡Corte de caja cerrado exitosamente!</div>";
         $corteCerrado = true;
+        header("Location: ../logout.php");
     } else {
         $mensaje = "<div class='alert error'>Error al cerrar caja: " . $conn->error . "</div>";
     }
+    
 }
 
 // Volvemos a consultar si hay corte activo
@@ -113,7 +115,7 @@ if ($corte) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corte de Caja | Cafetería</title>
+    <title>Corte de Caja | CAFÉrencia</title>
     <link rel="stylesheet" href="../homepage/css/styleshome.css">
     <link rel="stylesheet" href="css/gastos.css">
     <link rel="stylesheet" href="css/reporte.css">
