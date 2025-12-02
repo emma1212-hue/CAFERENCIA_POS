@@ -320,8 +320,6 @@ if (!empty($conteo_categorias)) {
         }
         
         // 3. Listener para el Grupo de Leche (Botones estáticos en HTML)
-        // Nota: Los listeners de Extras y Tamaños se agregan dinámicamente cuando se crean.
-        // Pero la Leche ya existe en el HTML, así que debemos activarla aquí.
         document.querySelectorAll('#group-milk .mod-option').forEach(btn => {
             btn.addEventListener('click', function() {
                 // A. Visual: Quitar active a los hermanos y ponerlo a este
@@ -644,20 +642,27 @@ function selectFinalProduct(data) {
         function addToCart() {
             if(!currentProduct) return;
             
-            const total = parseFloat(document.getElementById('modal-final-price').textContent.replace('$',''));
-            const finalUnitPrice = total / currentProduct.quantity;
+            // CORRECCIÓN: Calcular precio unitario SIN descuento (Base + Extras)
+            // El descuento se guarda aparte como porcentaje
+            let totalMods = 0;
+            if(currentProduct.selectedModifiers) {
+                for(const k in currentProduct.selectedModifiers) {
+                    totalMods += parseFloat(currentProduct.selectedModifiers[k].adjust) || 0;
+                }
+            }
+            const unitPriceGross = currentProduct.basePrice + totalMods;
 
             if(currentProduct.isEditing) {
                 const idx = cartItems.findIndex(i => i.lineId === currentProduct.lineId);
                 if(idx > -1) {
-                    currentProduct.finalPrice = finalUnitPrice;
+                    currentProduct.finalPrice = unitPriceGross; // Guardamos precio bruto
                     cartItems[idx] = currentProduct;
                 }
             } else {
                 const newItem = {
                     ...currentProduct,
                     lineId: ++lineIdCounter,
-                    finalPrice: finalUnitPrice
+                    finalPrice: unitPriceGross // Guardamos precio bruto
                 };
                 cartItems.push(newItem);
             }

@@ -22,15 +22,11 @@ $productos = $data['productos'];
 $totalVenta = (float)$data['total'];
 
 try {
-    // Iniciar transacción
     $conn->begin_transaction();
 
-    // Obtener detalles antiguos para calcular diferencias en inventario
-    $sql = "SELECT idDetalle, idProducto, cantidad FROM ventasDetalle WHERE idVenta = ?";
+    // 1. Obtener detalles antiguos para inventario
+    $sql = "SELECT idDetalle, idProducto, cantidad FROM ventasdetalle WHERE idVenta = ?";
     $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error en prepare: " . $conn->error);
-    }
     $stmt->bind_param("i", $idVenta);
     $stmt->execute();
     $resultadoAntiguo = $stmt->get_result();
@@ -38,135 +34,103 @@ try {
     $detallesAntiguos = [];
     while ($row = $resultadoAntiguo->fetch_assoc()) {
         $detallesAntiguos[$row['idProducto']] = [
-            'idDetalle' => $row['idDetalle'],
             'cantidad' => $row['cantidad']
         ];
     }
     $stmt->close();
 
-    // Actualizar tipo de pago y total de la venta
+    // 2. Actualizar cabecera de venta
     $sql = "UPDATE ventas SET tipoPago = ?, totalVenta = ? WHERE idVenta = ?";
     $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error en prepare: " . $conn->error);
-    }
     $stmt->bind_param("sdi", $tipoPago, $totalVenta, $idVenta);
-    if (!$stmt->execute()) {
-        throw new Exception("Error al actualizar venta: " . $stmt->error);
-    }
+    $stmt->execute();
     $stmt->close();
 
-    // Eliminar detalles antiguos
-    $sql = "DELETE FROM ventasDetalle WHERE idVenta = ?";
+    // 3. Limpiar detalles viejos
+    $sql = "DELETE FROM ventasdetalle WHERE idVenta = ?";
     $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error en prepare: " . $conn->error);
-    }
     $stmt->bind_param("i", $idVenta);
-    if (!$stmt->execute()) {
-        throw new Exception("Error al eliminar detalles: " . $stmt->error);
-    }
+    $stmt->execute();
     $stmt->close();
 
-    // Insertar nuevos detalles y actualizar inventario
+    // 4. Insertar nuevos detalles (CORREGIDO)
+    $sqlInsert = "INSERT INTO ventasdetalle (idVenta, idProducto, cantidad, precioUnitario, descuento, observaciones) 
+                  VALUES (?, ?, ?, ?, ?, ?)";
+    $stmtInsert = $conn->prepare($sqlInsert);
+
+    $sqlUpdateStock = "UPDATE productos SET stockActual = stockActual - ? WHERE idProducto = ?";
+    $stmtStock = $conn->prepare($sqlUpdateStock);
+
     foreach ($productos as $prod) {
         $idProducto = $prod['idProducto'] ?? null;
+        
+        // Si no tiene ID, buscar por nombre (para productos agregados manualmente)
+        if (!$idProducto) {
+            $stmtFind = $conn->prepare("SELECT idProducto FROM productos WHERE nombre LIKE ? LIMIT 1");
+            $likeName = '%' . $prod['nombre'] . '%';
+            $stmtFind->bind_param("s", $likeName);
+            $stmtFind->execute();
+            $stmtFind->bind_result($foundId);
+            if ($stmtFind->fetch()) {
+                $idProducto = $foundId;
+            }
+            $stmtFind->close();
+        }
+
+        if (!$idProducto) continue; // Saltar si no se encuentra
+
         $cantidad = (int)$prod['cantidad'];
-        $precioUnitario = (float)$prod['precioUnitario'];
-        $descuento = (float)($prod['descuento'] ?? 0);
+        
+        // CORRECCIÓN CRÍTICA:
+        // Recibimos precioUnitario (Bruto) y descuento (Porcentaje) desde JS
+        $precioUnitario = (float)$prod['precioUnitario']; 
+        $porcentajeDescuento = (float)($prod['descuento'] ?? 0);
 
-        // Si no tiene idProducto, intentar encontrarlo por nombre
-        if (!$idProducto) {
-            $sql = "SELECT idProducto FROM productos WHERE nombre LIKE ?";
-            $stmt = $conn->prepare($sql);
-            if ($stmt) {
-                $nombre = '%' . $prod['nombre'] . '%';
-                $stmt->bind_param("s", $nombre);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($row = $result->fetch_assoc()) {
-                    $idProducto = $row['idProducto'];
-                }
-                $stmt->close();
+        // Calculamos el MONTO del descuento para guardarlo en la BD (pesos)
+        $montoDescuento = ($precioUnitario * $cantidad) * ($porcentajeDescuento / 100);
+
+        // Reconstruir observaciones si existen
+        $observaciones = "";
+        if (isset($prod['selectedModifiers']) && is_array($prod['selectedModifiers'])) {
+            $obsArray = [];
+            foreach ($prod['selectedModifiers'] as $mod) {
+                if(isset($mod['value'])) $obsArray[] = $mod['value'];
             }
+            $observaciones = implode(", ", $obsArray);
         }
 
-        // Si aún no tiene idProducto, saltar
-        if (!$idProducto) {
-            continue;
-        }
+        // Insertar (Guardamos Precio Bruto y Monto Descuento por separado)
+        $stmtInsert->bind_param("iiidds", $idVenta, $idProducto, $cantidad, $precioUnitario, $montoDescuento, $observaciones);
+        $stmtInsert->execute();
 
-        // Insertar nuevo detalle
-        $sql = "INSERT INTO ventasDetalle (idVenta, idProducto, cantidad, precioUnitario, descuento) 
-                VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error en prepare: " . $conn->error);
-        }
-        $stmt->bind_param("iiddd", $idVenta, $idProducto, $cantidad, $precioUnitario, $descuento);
-        if (!$stmt->execute()) {
-            throw new Exception("Error al insertar detalle: " . $stmt->error);
-        }
-        $stmt->close();
+        // 5. Gestión de Inventario (Diferencia)
+        $cantidadAntigua = isset($detallesAntiguos[$idProducto]) ? $detallesAntiguos[$idProducto]['cantidad'] : 0;
+        $diferencia = $cantidad - $cantidadAntigua;
 
-        // Actualizar inventario basado en cambios de cantidad
+        if ($diferencia != 0) {
+            $stmtStock->bind_param("ii", $diferencia, $idProducto);
+            $stmtStock->execute();
+        }
+        
+        // Marcar como procesado para no devolver stock después
         if (isset($detallesAntiguos[$idProducto])) {
-            $cantidadAntigua = $detallesAntiguos[$idProducto]['cantidad'];
-            $diferencia = $cantidad - $cantidadAntigua; // Positivo = aumentó, Negativo = disminuyó
-            
-            if ($diferencia !== 0) {
-                // Restar la diferencia del inventario (si aumentó, se resta más; si disminuyó, se suma)
-                $sql = "UPDATE productos SET stockActual = stockActual - ? WHERE idProducto = ?";
-                $stmt = $conn->prepare($sql);
-                if (!$stmt) {
-                    throw new Exception("Error en prepare: " . $conn->error);
-                }
-                $stmt->bind_param("ii", $diferencia, $idProducto);
-                if (!$stmt->execute()) {
-                    throw new Exception("Error al actualizar inventario: " . $stmt->error);
-                }
-                $stmt->close();
-            }
-            
-            // Marcar como procesado
             unset($detallesAntiguos[$idProducto]);
-        } else {
-            // Es un producto nuevo, restar del inventario
-            $sql = "UPDATE productos SET stockActual = stockActual - ? WHERE idProducto = ?";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                throw new Exception("Error en prepare: " . $conn->error);
-            }
-            $stmt->bind_param("ii", $cantidad, $idProducto);
-            if (!$stmt->execute()) {
-                throw new Exception("Error al actualizar inventario: " . $stmt->error);
-            }
-            $stmt->close();
         }
     }
 
-    // Procesar productos que fueron eliminados (devolver al inventario)
-    foreach ($detallesAntiguos as $idProductoEliminado => $detalle) {
-        $cantidadADevolverAlInventario = $detalle['cantidad'];
-        $sql = "UPDATE productos SET stockActual = stockActual + ? WHERE idProducto = ?";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error en prepare: " . $conn->error);
-        }
-        $stmt->bind_param("ii", $cantidadADevolverAlInventario, $idProductoEliminado);
-        if (!$stmt->execute()) {
-            throw new Exception("Error al devolver inventario: " . $stmt->error);
-        }
-        $stmt->close();
+    // 6. Devolver stock de productos eliminados completamente
+    $sqlDevolver = "UPDATE productos SET stockActual = stockActual + ? WHERE idProducto = ?";
+    $stmtDevolver = $conn->prepare($sqlDevolver);
+    foreach ($detallesAntiguos as $idProdEliminado => $datos) {
+        $stmtDevolver->bind_param("ii", $datos['cantidad'], $idProdEliminado);
+        $stmtDevolver->execute();
     }
 
-    // Confirmar transacción
     $conn->commit();
-    die(json_encode(['success' => true, 'message' => 'Venta actualizada correctamente']));
+    echo json_encode(['success' => true, 'message' => 'Venta modificada correctamente']);
 
 } catch (Exception $e) {
-    // Revertir en caso de error
     $conn->rollback();
-    die(json_encode(['success' => false, 'message' => $e->getMessage()]));
+    echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
 ?>
