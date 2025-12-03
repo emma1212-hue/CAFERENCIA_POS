@@ -83,10 +83,12 @@ $rol = $_SESSION['rol'];
                         <span><a href="ventas/ventas.php" style="text-decoration: none; color: inherit;">Nueva Venta</a></span>
 
                     </button>
+                    <?php if ($rol === 'admin'): ?>
                     <button class="submenu-item">
                         <span class="submenu-icon">✏️</span>
                         <span><a href="ventas/modificarVentas.php" style="text-decoration: none; color: inherit;">Modificar Venta</a></span>
                     </button>
+                    <?php endif; ?>
                     <button class="submenu-item">
                         <span class="submenu-icon">🔍</span>
                         <span><a href="ventas/consultarVentas.php" style="text-decoration: none; color: inherit;">Consultar Venta</a></span>
