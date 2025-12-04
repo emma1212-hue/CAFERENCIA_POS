@@ -86,7 +86,7 @@
                         <button type="submit" class="btn-search">
                             <i class="fas fa-search"></i> Buscar
                         </button>
-                        <button type="button" class="btn-clear" onclick="location.href='../indexHome.php'">
+                        <button type="button" class="btn-clear" onclick="location.href='../indexhome.php'">
                              Volver
                         </button>
                     </div>

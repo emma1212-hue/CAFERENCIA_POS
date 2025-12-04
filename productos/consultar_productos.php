@@ -103,7 +103,7 @@
                         <button type="button" class="btn-info" onclick="location.href='consultar_insumos.php'">
                             Gestionar Insumos
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexHome.php'">
+                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexhome.php'">
                             Volver
                         </button>
                     </div>

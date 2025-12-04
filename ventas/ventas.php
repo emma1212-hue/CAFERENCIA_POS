@@ -844,6 +844,11 @@ function renderCart() {
 
             if(confirm("¿Confirmar venta?")) {
                 
+                // 1. ABRIR VENTANA INMEDIATAMENTE (Para evitar bloqueo de pop-up)
+                // Se abre en blanco y luego se carga la URL
+                const ventanaTicket = window.open('', '_blank');
+                ventanaTicket.document.write('<div style="text-align:center; padding:20px; font-family:sans-serif;">Generando ticket...<br>Por favor espere.</div>');
+
                 const saleData = {
                     items: cartItems, 
                     total: total,
@@ -865,33 +870,33 @@ function renderCart() {
                     if (data.success) {
                         alert("Venta realizada con Éxito! Ticket #" + data.idVenta);
                         
-                        // --- CORRECCIÓN AQUÍ: Variables consistentes ---
+                        // --- Variables consistentes ---
                         let paramsPago = "";
                         
                         if (method === 'Efectivo') {
-                            // Usamos 'recibido' en español consistentemente
                             const recibido = document.getElementById('pay-input').value || 0;
-                            // Limpiamos el texto del cambio para obtener solo el numero
                             const cambioTexto = document.getElementById('pay-change').textContent;
                             const cambio = cambioTexto.replace(/[^0-9.]/g, '');
-                            
-                            // Construimos la URL usando las variables correctas
                             paramsPago = `&recibido=${recibido}&cambio=${cambio}`;
                         }
-                        // -----------------------------------------------
                         
                         const urlTicket = `phps/generar_ticket.php?id=${data.idVenta}${paramsPago}`;
-                        window.open(urlTicket, '_blank');
+                        
+                        // 2. REDIRIGIR LA VENTANA YA ABIERTA
+                        ventanaTicket.location.href = urlTicket;
                         
                         cartItems = [];
                         lineIdCounter = 1;
                         renderCart();
                         closeModal();
                     } else {
+                        // Si falla, cerramos la ventana que abrimos
+                        ventanaTicket.close();
                         alert("Error: " + data.message);
                     }
                 })
                 .catch(error => {
+                    ventanaTicket.close();
                     console.error('Error:', error);
                     alert("Error de comunicación: " + error.message);
                 })

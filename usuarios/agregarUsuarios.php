@@ -123,7 +123,7 @@
                     </div>
 
                     <div class="form-actions">
-<button type="button" class="btn btn-secondary" onclick="location.href='../indexHome.php'">
+<button type="button" class="btn btn-secondary" onclick="location.href='../indexhome.php'">
     Volver
 </button>
                         <button type="submit" class="btn btn-primary">

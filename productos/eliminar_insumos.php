@@ -131,7 +131,7 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexHome.php'">
+                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexhome.php'">
                              Volver
                         </button>
                         <button type="button" class="btn btn-danger" id="btnEliminar" onclick="confirmarEliminacion()">
@@ -147,7 +147,7 @@
                     <h3><i class="fas fa-info-circle"></i> Eliminar Insumo</h3>
                     <p>Seleccione un insumo de la tabla para poder eliminarlo. Esta acción no se puede deshacer.</p>
                     <div class="form-actions" style="margin-top: 15px;">
-                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexHome.php'">
+                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexhome.php'">
                             <i class="fas fa-arrow-left"></i> Volver
                         </button>
                         <button type="button" class="btn-info" onclick="location.href='eliminar_productos.php'">

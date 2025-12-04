@@ -24,47 +24,28 @@ $totalVenta = (float)$data['total'];
 try {
     $conn->begin_transaction();
 
-    // 1. Obtener detalles antiguos para inventario
-    $sql = "SELECT idDetalle, idProducto, cantidad FROM ventasdetalle WHERE idVenta = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $idVenta);
-    $stmt->execute();
-    $resultadoAntiguo = $stmt->get_result();
-    
-    $detallesAntiguos = [];
-    while ($row = $resultadoAntiguo->fetch_assoc()) {
-        $detallesAntiguos[$row['idProducto']] = [
-            'cantidad' => $row['cantidad']
-        ];
-    }
-    $stmt->close();
+    // NOTA: Se eliminó el paso 1 (Obtener detalles antiguos) ya que no necesitamos devolver stock.
 
-    // 2. Actualizar cabecera de venta
     $sql = "UPDATE ventas SET tipoPago = ?, totalVenta = ? WHERE idVenta = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sdi", $tipoPago, $totalVenta, $idVenta);
     $stmt->execute();
     $stmt->close();
 
-    // 3. Limpiar detalles viejos
     $sql = "DELETE FROM ventasdetalle WHERE idVenta = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $idVenta);
     $stmt->execute();
     $stmt->close();
 
-    // 4. Insertar nuevos detalles (CORREGIDO)
     $sqlInsert = "INSERT INTO ventasdetalle (idVenta, idProducto, cantidad, precioUnitario, descuento, observaciones) 
                   VALUES (?, ?, ?, ?, ?, ?)";
     $stmtInsert = $conn->prepare($sqlInsert);
 
-    $sqlUpdateStock = "UPDATE productos SET stockActual = stockActual - ? WHERE idProducto = ?";
-    $stmtStock = $conn->prepare($sqlUpdateStock);
 
     foreach ($productos as $prod) {
         $idProducto = $prod['idProducto'] ?? null;
         
-        // Si no tiene ID, buscar por nombre (para productos agregados manualmente)
         if (!$idProducto) {
             $stmtFind = $conn->prepare("SELECT idProducto FROM productos WHERE nombre LIKE ? LIMIT 1");
             $likeName = '%' . $prod['nombre'] . '%';
@@ -77,19 +58,14 @@ try {
             $stmtFind->close();
         }
 
-        if (!$idProducto) continue; // Saltar si no se encuentra
+        if (!$idProducto) continue; 
 
         $cantidad = (int)$prod['cantidad'];
         
-        // CORRECCIÓN CRÍTICA:
-        // Recibimos precioUnitario (Bruto) y descuento (Porcentaje) desde JS
         $precioUnitario = (float)$prod['precioUnitario']; 
         $porcentajeDescuento = (float)($prod['descuento'] ?? 0);
-
-        // Calculamos el MONTO del descuento para guardarlo en la BD (pesos)
         $montoDescuento = ($precioUnitario * $cantidad) * ($porcentajeDescuento / 100);
 
-        // Reconstruir observaciones si existen
         $observaciones = "";
         if (isset($prod['selectedModifiers']) && is_array($prod['selectedModifiers'])) {
             $obsArray = [];
@@ -99,32 +75,14 @@ try {
             $observaciones = implode(", ", $obsArray);
         }
 
-        // Insertar (Guardamos Precio Bruto y Monto Descuento por separado)
+        // Insertar detalle
         $stmtInsert->bind_param("iiidds", $idVenta, $idProducto, $cantidad, $precioUnitario, $montoDescuento, $observaciones);
         $stmtInsert->execute();
 
-        // 5. Gestión de Inventario (Diferencia)
-        $cantidadAntigua = isset($detallesAntiguos[$idProducto]) ? $detallesAntiguos[$idProducto]['cantidad'] : 0;
-        $diferencia = $cantidad - $cantidadAntigua;
-
-        if ($diferencia != 0) {
-            $stmtStock->bind_param("ii", $diferencia, $idProducto);
-            $stmtStock->execute();
-        }
-        
-        // Marcar como procesado para no devolver stock después
-        if (isset($detallesAntiguos[$idProducto])) {
-            unset($detallesAntiguos[$idProducto]);
-        }
+        // NOTA: Se eliminó el paso 5 (Gestión de Inventario / Diferencias).
     }
 
-    // 6. Devolver stock de productos eliminados completamente
-    $sqlDevolver = "UPDATE productos SET stockActual = stockActual + ? WHERE idProducto = ?";
-    $stmtDevolver = $conn->prepare($sqlDevolver);
-    foreach ($detallesAntiguos as $idProdEliminado => $datos) {
-        $stmtDevolver->bind_param("ii", $datos['cantidad'], $idProdEliminado);
-        $stmtDevolver->execute();
-    }
+    // NOTA: Se eliminó el paso 6 (Devolver stock de eliminados).
 
     $conn->commit();
     echo json_encode(['success' => true, 'message' => 'Venta modificada correctamente']);

@@ -52,7 +52,7 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexHome.php'">
+                        <button type="button" class="btn btn-secondary" onclick="location.href='../indexhome.php'">
                             <i class="fas fa-arrow-left"></i> Volver
                         </button>
                         <button type="button" class="btn btn-danger" id="btnEliminar" onclick="confirmarEliminacion()">
