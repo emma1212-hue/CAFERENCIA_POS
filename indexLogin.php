@@ -61,7 +61,7 @@ unset($_SESSION['contador']);
               </div>
 
               <div class="heading">
-                <h2>Iniciar Sesion</h2>
+                <h2>Iniciar Sesión</h2>
               </div>
 
               <div class="actual-form">

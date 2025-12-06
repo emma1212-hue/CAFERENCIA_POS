@@ -78,24 +78,23 @@ $rol = $_SESSION['rol'];
                     <p class="card-description">Registrar nueva venta</p>
                 </div>
                 <div class="card-submenu" id="submenu-ventas">
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='ventas/ventas.php'">
                         <span class="submenu-icon">➕</span>
-                        <span><a href="ventas/ventas.php" style="text-decoration: none; color: inherit;">Nueva Venta</a></span>
-
+                        <span>Nueva Venta</span>
                     </button>
                     <?php if ($rol === 'admin'): ?>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='ventas/modificarVentas.php'">
                         <span class="submenu-icon">✏️</span>
-                        <span><a href="ventas/modificarVentas.php" style="text-decoration: none; color: inherit;">Modificar Venta</a></span>
+                        <span>Modificar Venta</span>
                     </button>
                     <?php endif; ?>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='ventas/consultarVentas.php'">
                         <span class="submenu-icon">🔍</span>
-                        <span><a href="ventas/consultarVentas.php" style="text-decoration: none; color: inherit;">Consultar Venta</a></span>
+                        <span>Consultar Venta</span>
                     </button>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='ventas/tickets.php'">
                         <span class="submenu-icon">🖨️</span>
-                       <span><a href="ventas/tickets.php" style="text-decoration: none; color: inherit;">Impresión Tickets</a></span>
+                        <span>Impresión Tickets</span>
                     </button>
                 </div>
             </div>
@@ -109,21 +108,21 @@ $rol = $_SESSION['rol'];
                     <p class="card-description">Gestionar inventario</p>
                 </div>
                 <div class="card-submenu" id="submenu-productos">
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='productos/registrarProductos.php'">
                         <span class="submenu-icon">➕</span>
-                        <span><a href="productos/registrarProductos.php" style="text-decoration: none; color: inherit;">Registrar Producto</a></span>
+                        <span>Registrar Producto</span>
                     </button>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='productos/modificar_productos.php'">
                         <span class="submenu-icon">✏️</span>
-                        <span><a href="productos/modificar_productos.php" style="text-decoration: none; color: inherit;">Modificar Producto</a></span>
+                        <span>Modificar Producto</span>
                     </button>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='productos/consultar_productos.php'">
                         <span class="submenu-icon">🔍</span>
-                        <span><a href="productos/consultar_productos.php" style="text-decoration: none; color: inherit;">Consultar Producto</a></span>
+                        <span>Consultar Producto</span>
                     </button>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='productos/eliminar_productos.php'">
                         <span class="submenu-icon">🗑️</span>
-                    <span><a href="productos/eliminar_productos.php" style="text-decoration: none; color: inherit;">Eliminar producto</a></span>
+                        <span>Eliminar producto</span>
                     </button>
                 </div>
             </div>
@@ -138,21 +137,21 @@ $rol = $_SESSION['rol'];
         </div>
 
         <div class="card-submenu" id="submenu-usuarios">
-            <button class="submenu-item">
+            <button class="submenu-item" onclick="window.location.href='usuarios/agregarUsuarios.php'">
                 <span class="submenu-icon">➕</span>
-                <span><a href="usuarios/agregarUsuarios.php" style="text-decoration: none; color: inherit;">Registrar Usuario</a></span>
+                <span>Agregar Usuario</span>
             </button>
-            <button class="submenu-item">
+            <button class="submenu-item" onclick="window.location.href='usuarios/modificarUsuarios.php'">
                 <span class="submenu-icon">✏️</span>
-                <span><a href="usuarios/modificarUsuarios.php" style="text-decoration: none; color: inherit;">Modificar Usuario</a></span>
+                <span>Modificar Usuario</span>
             </button>
-            <button class="submenu-item">
+            <button class="submenu-item" onclick="window.location.href='usuarios/consultar_usuarios.php'">
                 <span class="submenu-icon">🔍</span>
-                <span><a href="usuarios/consultar_usuarios.php" style="text-decoration: none; color: inherit;">Consultar Usuario</a></span>
+                <span>Consultar Usuario</span>
             </button>
-            <button class="submenu-item">
+            <button class="submenu-item" onclick="window.location.href='usuarios/eliminarUsuarios.php'">
                 <span class="submenu-icon">👤</span>
-                <span><a href="usuarios/eliminarUsuarios.php" style="text-decoration: none; color: inherit;"> Dar de Baja</a></span>
+                <span> Dar de Baja</span>
             </button>
         </div>
     </div>
@@ -168,13 +167,13 @@ $rol = $_SESSION['rol'];
                     <p class="card-description">Cierre de caja</p>
                 </div>
                 <div class="card-submenu" id="submenu-reporte">
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='reporte/generarReporte.php'">
                         <span class="submenu-icon">💰</span>
-                        <span><a href="reporte/generarReporte.php" style="text-decoration: none; color: inherit;">Corte de Caja</a></span>
+                        <span>Corte de Caja</span>
                     </button>
-                    <button class="submenu-item">
+                    <button class="submenu-item" onclick="window.location.href='reporte/gastos.php'">
                         <span class="submenu-icon">📝</span>
-                        <span><a href="reporte/gastos.php" style="text-decoration: none; color: inherit;">Registrar gastos</a></span>
+                        <span>Registrar gastos</span>
                     </button>
                 </div>
             </div>

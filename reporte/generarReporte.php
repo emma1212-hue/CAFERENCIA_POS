@@ -93,7 +93,7 @@ if ($corte) {
     }
 
     // Gastos
-    $sqlGastos = "SELECT * FROM gastosDiarios WHERE DATE(fechaGasto) = ?";
+    $sqlGastos = "SELECT * FROM gastosdiarios WHERE DATE(fechaGasto) = ?";
     $stmtG = $conn->prepare($sqlGastos);
     $stmtG->bind_param("s", $fechaCorte);
     $stmtG->execute();
@@ -169,7 +169,7 @@ if ($corte) {
 
                 <div class="stats-grid">
                     <!-- Ventas -->
-                    <div class="stat-card blue">
+                    <div class="stat-card blue clickable-stat" onclick="verTodasVentas()" style="cursor: pointer;" title="Click para ver todas las ventas del día">
                         <div class="stat-icon">🛒</div>
                         <div class="stat-info">
                             <h3>Ventas Totales</h3>
@@ -189,7 +189,7 @@ if ($corte) {
                     </div>
 
                     <!-- Efectivo (Dinámico) -->
-                    <div class="stat-card green highlight">
+                    <div class="stat-card green highlight clickable-stat" onclick="verDetalleVentas()" style="cursor: pointer;" title="Click para ver detalle de ventas del día">
                         <div class="stat-icon">💵</div>
                         <div class="stat-info">
                             <h3>Efectivo en Caja</h3>
@@ -313,6 +313,32 @@ if ($corte) {
             // Actualizar DOM
             document.getElementById('display-caja-teorica').textContent = totalStr;
             document.getElementById('display-total-balance').textContent = totalStr;
+        }
+
+        function verDetalleVentas() {
+            // Obtener la fecha de hoy en zona horaria de México
+            const hoy = new Date().toLocaleDateString('en-CA', {
+                timeZone: 'America/Mexico_City',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            
+            // Redirigir a consultarVentas.php con parámetros en la URL (con filtro de Efectivo)
+            window.location.href = `../ventas/consultarVentas.php?tipoPago=Efectivo&fromDate=${hoy}&toDate=${hoy}`;
+        }
+
+        function verTodasVentas() {
+            // Obtener la fecha de hoy en zona horaria de México
+            const hoy = new Date().toLocaleDateString('en-CA', {
+                timeZone: 'America/Mexico_City',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            
+            // Redirigir a consultarVentas.php sin filtro de tipo de pago (todas las ventas del día)
+            window.location.href = `../ventas/consultarVentas.php?fromDate=${hoy}&toDate=${hoy}`;
         }
     </script>
 </body>

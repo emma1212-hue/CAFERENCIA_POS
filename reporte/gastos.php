@@ -74,8 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             try {
                 $fechaGasto = date('Y-m-d H:i:s');
                 
-                // Actualizado a la tabla 'gastosDiarios' incluyendo idCorte
-                $sql = "INSERT INTO gastosDiarios (idCorte, fechaGasto, montoGasto, conceptoGasto) VALUES (?, ?, ?, ?)";
+                // Actualizado a la tabla 'gastosdiarios' incluyendo idCorte
+                $sql = "INSERT INTO gastosdiarios (idCorte, fechaGasto, montoGasto, conceptoGasto) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 
                 // i=entero, s=string, d=double, s=string
@@ -85,7 +85,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Éxito: También actualizamos el acumulado en la tabla cortecaja para mantener sincronía
                     $conn->query("UPDATE cortecaja SET totalGasto = totalGasto + $montoGasto WHERE idCorte = $idCorte");
                     
-                    $mensaje = "<div class='alert success'>Gasto registrado correctamente en el Corte #$idCorte.</div>";
+                    $fechaFormateada = date('d/m/Y');
+                    $mensaje = "<div class='alert success'>Gasto registrado correctamente para el día $fechaFormateada.</div>";
                     $montoGasto = '';
                     $conceptoGasto = '';
                 } else {

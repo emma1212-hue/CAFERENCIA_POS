@@ -11,7 +11,7 @@ $rol = $_SESSION['rol'];
 
 $productos = [];
 // Seleccionamos ID, Nombre, Precio, Categoría y Descripción
-$sql = "SELECT idProducto, nombre, precioVenta, idCategoria, descripcion FROM productos WHERE idCategoria != 6  AND idCategoria != 7 ORDER BY nombre ASC";
+$sql = "SELECT idProducto, nombre, precioVenta, idCategoria, descripcion FROM productos WHERE idCategoria != 6  AND idCategoria != 7 AND status = 'activo' ORDER BY nombre ASC";
 $resultado = $conn->query($sql);
 
 if ($resultado && $resultado->num_rows > 0) {
@@ -23,7 +23,7 @@ if ($resultado && $resultado->num_rows > 0) {
 }
 
 $extras_db = [];
-$sql_extras = "SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 6 ORDER BY nombre ASC";
+$sql_extras = "SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 6 AND status = 'activo' ORDER BY nombre ASC";
 $res_extras = $conn->query($sql_extras);
 if ($res_extras) {
     while ($row = $res_extras->fetch_assoc()) {
@@ -31,7 +31,7 @@ if ($res_extras) {
     }
 }
 $sabores_db = [];
-$sql_sabores = "SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 7 ORDER BY nombre ASC";
+$sql_sabores = "SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 7 AND status = 'activo' ORDER BY nombre ASC";
 $res_sabores = $conn->query($sql_sabores);
 if ($res_sabores) {
     while ($row = $res_sabores->fetch_assoc()) {
@@ -104,7 +104,7 @@ if (!empty($conteo_categorias)) {
                 <button class="icon-btn menu-btn" onclick="window.location.href='../indexhome.php'">
                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
-             <h1>CAFÉRENCIA - NUEVA VENTA</h1>
+             <h1>Nueva Venta</h1>
             </div>
         </div>
 
@@ -116,6 +116,7 @@ if (!empty($conteo_categorias)) {
                 <div class="catalogo-header">
                     <div class="search-bar">
                         <input type="text" placeholder="Buscar producto..." class="search-input" oninput="searchProducts()">
+                        <button class="clear-search-btn" onclick="clearSearch()" style="display:none;">✕</button>
                         <button class="search-btn" onclick="searchProducts()">🔍</button>
                     </div>
                     
@@ -341,19 +342,33 @@ if (!empty($conteo_categorias)) {
     });
         // --- FILTROS Y BÚSQUEDA ---
         function filterProducts(catId) {
+            // Actualizar tabs activos
             document.querySelectorAll('.category-tabs .tab').forEach(t => {
                 const isActive = (t.dataset.categoryId == catId) || (catId === 'all' && t.textContent.includes('Todos'));
                 t.classList.toggle('active', isActive);
             });
+            
+            // Obtener término de búsqueda actual
+            const term = document.querySelector('.search-input').value.toLowerCase().trim();
+            
+            // Aplicar ambos filtros: categoría Y búsqueda
             document.querySelectorAll('.product-card').forEach(c => {
-                c.style.display = (catId === 'all' || c.dataset.categoryId == catId) ? 'flex' : 'none';
+                const name = c.querySelector('.product-name').textContent.toLowerCase();
+                const matchSearch = term === '' || name.includes(term);
+                const matchCat = (catId === 'all' || c.dataset.categoryId == catId);
+                c.style.display = (matchSearch && matchCat) ? 'flex' : 'none';
             });
         }
 
         function searchProducts() {
-            const term = document.querySelector('.search-input').value.toLowerCase().trim();
+            const input = document.querySelector('.search-input');
+            const clearBtn = document.querySelector('.clear-search-btn');
+            const term = input.value.toLowerCase().trim();
             const activeTab = document.querySelector('.category-tabs .tab.active');
             const catId = activeTab ? (activeTab.dataset.categoryId || 'all') : 'all';
+
+            // Mostrar/ocultar botón X
+            clearBtn.style.display = term ? 'block' : 'none';
 
             document.querySelectorAll('.product-card').forEach(c => {
                 const name = c.querySelector('.product-name').textContent.toLowerCase();
@@ -361,6 +376,14 @@ if (!empty($conteo_categorias)) {
                 const matchCat = (catId === 'all' || c.dataset.categoryId == catId);
                 c.style.display = (matchSearch && matchCat) ? 'flex' : 'none';
             });
+        }
+
+        function clearSearch() {
+            const input = document.querySelector('.search-input');
+            const clearBtn = document.querySelector('.clear-search-btn');
+            input.value = '';
+            clearBtn.style.display = 'none';
+            searchProducts();
         }
 
         // --- MODAL PRODUCTO ---
@@ -385,16 +408,17 @@ if (!empty($conteo_categorias)) {
 
             // --- VISIBILIDAD ---
             const isTisana = nameBase.toLowerCase().includes('tisana');
+            const isDesayuno = (catId == 5); // Categoría 5 = Desayunos
             
             // Sabores
             document.getElementById('group-flavors').style.display = isTisana ? 'block' : 'none';
             
-            // Leche (Ocultar si es Comida, Extra o Tisana)
+            // Leche (Ocultar si es Desayuno, Comida, Extra o Tisana)
             const showMilk = !(catId == 5 || catId == 6 || isTisana);
             document.getElementById('group-milk').style.display = showMilk ? 'block' : 'none';
             
-            // Extras (Ocultar si es Tisana)
-            document.getElementById('group-extras').style.display = isTisana ? 'none' : 'block';
+            // Extras (Ocultar si es Tisana o Desayuno)
+            document.getElementById('group-extras').style.display = (isTisana || isDesayuno) ? 'none' : 'block';
 
             // Botón Añadir
             const addBtn = document.querySelector('.btn-add-to-cart');
@@ -415,7 +439,7 @@ if (!empty($conteo_categorias)) {
                     
                     sizeGroup.style.display = 'block';
                     sizeGroup.innerHTML = '<h4>Tamaño:</h4>';
-                    const suffixes = ['Chico', 'Grande', 'Pequeño', 'Mediano', 'Vaso', 'Estándar', 'CH', 'G', 'M', 'Gde'];
+                    const suffixes = ['Chico', 'Grande', 'Pequeño', 'Mediano', 'Estándar', 'CH', 'G', 'M', 'Gde'];
                     
                     variants.forEach(v => {
                         const btn = document.createElement('button');
@@ -686,14 +710,17 @@ function openProductModalForEdit(lineId) {
 
             // Restaurar Visibilidad basada en datos guardados o nombre
             const isTisana = currentProduct.name.toLowerCase().includes('tisana');
+            const catId = currentProduct.categoryId || 0;
+            const isDesayuno = (catId == 5); // Categoría 5 = Desayunos
+            
             document.getElementById('group-flavors').style.display = isTisana ? 'block' : 'none';
             
-            // Leche: Usar categoryId guardado
-            const catId = currentProduct.categoryId || 0;
-            const showMilk = !(catId == 1 || catId == 6 || isTisana);
+            // Leche: Ocultar si es Desayuno, Extra o Tisana
+            const showMilk = !(catId == 5 || catId == 6 || isTisana);
             document.getElementById('group-milk').style.display = showMilk ? 'block' : 'none';
             
-            document.getElementById('group-extras').style.display = isTisana ? 'none' : 'block';
+            // Extras: Ocultar si es Tisana o Desayuno
+            document.getElementById('group-extras').style.display = (isTisana || isDesayuno) ? 'none' : 'block';
 
             // Restaurar Botones Activos
             document.querySelectorAll('.mod-option').forEach(b => b.classList.remove('active'));

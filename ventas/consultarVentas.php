@@ -44,7 +44,7 @@ $tiposDePago = ['Efectivo', 'Tarjeta', 'Transferencia']; // Ajusta según tu DB 
     <link rel="stylesheet" href="../homepage/css/styleshome.css">
     <link rel="stylesheet" href="css/consultarVentas.css">
 </head>
-<body onload="applyFilters()">
+<body>
     <div class="container">
         <div class="header">
             <button class="icon-btn" onclick="window.location.href='../indexhome.php'">&#8592;</button>
@@ -203,6 +203,25 @@ $tiposDePago = ['Efectivo', 'Tarjeta', 'Transferencia']; // Ajusta según tu DB 
         window.onclick = function(e) {
             if (e.target == document.getElementById('detailModal')) closeModal();
         }
+
+        // Cargar filtros desde URL al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Aplicar parámetros de URL a los inputs
+            if (urlParams.has('tipoPago')) {
+                document.getElementById('tipoPagoFilter').value = urlParams.get('tipoPago');
+            }
+            if (urlParams.has('fromDate')) {
+                document.getElementById('fromDate').value = urlParams.get('fromDate');
+            }
+            if (urlParams.has('toDate')) {
+                document.getElementById('toDate').value = urlParams.get('toDate');
+            }
+            
+            // Aplicar filtros automáticamente
+            applyFilters();
+        });
 
         // LÓGICA DE FILTRADO
         function applyFilters() {

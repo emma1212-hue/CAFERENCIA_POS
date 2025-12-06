@@ -42,6 +42,17 @@
     background-color: #faf8f5;
 }
 
+.stat-card.clickable-stat {
+    transition: all 0.3s ease;
+}
+
+.stat-card.clickable-stat:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(74, 59, 48, 0.2);
+    border-color: var(--cafe-medio);
+    background-color: #f5f0e8;
+}
+
 .stat-icon {
     font-size: 2rem;
     background: var(--bg-page);
@@ -101,6 +112,20 @@
     margin-bottom: 8px;
     font-size: 0.95rem;
     color: var(--text-secondary);
+}
+
+.balance-row.clickable-row {
+    transition: all 0.3s ease;
+    padding: 8px;
+    margin: 10px -8px 8px -8px;
+    border-radius: 8px;
+}
+
+.balance-row.clickable-row:hover {
+    background-color: rgba(122, 106, 89, 0.15);
+    color: var(--cafe-oscuro);
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .balance-row.minus {

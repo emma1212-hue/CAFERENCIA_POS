@@ -27,7 +27,7 @@ $tamanosValidos = [
 ];
 
 // Consulta: Busca productos que EMPIECEN con el nombre base y sean de la misma CATEGORÍA
-$sql = "SELECT idProducto, nombre, precioVenta FROM productos WHERE nombre LIKE ? AND idCategoria = ? ORDER BY precioVenta ASC";
+$sql = "SELECT idProducto, nombre, precioVenta FROM productos WHERE nombre LIKE ? AND idCategoria = ?   AND status = 'activo' ORDER BY precioVenta ASC";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {

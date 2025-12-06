@@ -55,7 +55,7 @@ $tiposDePago = ['Efectivo', 'Tarjeta', 'Transferencia'];
 
 // Cargar productos para el catálogo
 $productos = [];
-$sql = "SELECT idProducto, nombre, precioVenta, idCategoria, descripcion FROM productos WHERE idCategoria != 6 AND idCategoria != 7 ORDER BY nombre ASC";
+$sql = "SELECT idProducto, nombre, precioVenta, idCategoria, descripcion FROM productos WHERE idCategoria != 6 AND idCategoria != 7 AND status = 'activo' ORDER BY nombre ASC";
 $resultado = $conn->query($sql);
 
 if ($resultado && $resultado->num_rows > 0) {
@@ -66,11 +66,11 @@ if ($resultado && $resultado->num_rows > 0) {
 
 // Cargar Extras y Sabores
 $extras_db = [];
-$res_extras = $conn->query("SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 6 ORDER BY nombre ASC");
+$res_extras = $conn->query("SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 6 AND status = 'activo' ORDER BY nombre ASC");
 while ($row = $res_extras->fetch_assoc()) $extras_db[] = $row;
 
 $sabores_db = [];
-$res_sabores = $conn->query("SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 7 ORDER BY nombre ASC");
+$res_sabores = $conn->query("SELECT idProducto, nombre, precioVenta FROM productos WHERE idCategoria = 7 AND status = 'activo'  ORDER BY nombre ASC");
 while ($row = $res_sabores->fetch_assoc()) $sabores_db[] = $row;
 
 // Agrupar productos únicos
@@ -490,10 +490,11 @@ if (!empty($conteo_categorias)) {
 
             const isTisana = prod.nombre.toLowerCase().includes('tisana');
             const catId = prod.idCategoria;
+            const isDesayuno = (catId == 5); // Categoría 5 = Desayunos
 
             document.getElementById('group-flavors').style.display = isTisana ? 'block' : 'none';
             document.getElementById('group-milk').style.display = (catId == 5 || catId == 6 || isTisana) ? 'none' : 'block';
-            document.getElementById('group-extras').style.display = isTisana ? 'none' : 'block';
+            document.getElementById('group-extras').style.display = (isTisana || isDesayuno) ? 'none' : 'block';
 
             restoreActiveButtons();
 
@@ -736,9 +737,11 @@ if (!empty($conteo_categorias)) {
             renderModalExtras(); renderModalFlavors();
             
             const isTisana = nombre.toLowerCase().includes('tisana');
+            const isDesayuno = (cat == 5); // Categoría 5 = Desayunos
+            
             document.getElementById('group-flavors').style.display = isTisana ? 'block' : 'none';
             document.getElementById('group-milk').style.display = (cat == 5 || cat == 6 || isTisana) ? 'none' : 'block';
-            document.getElementById('group-extras').style.display = isTisana ? 'none' : 'block';
+            document.getElementById('group-extras').style.display = (isTisana || isDesayuno) ? 'none' : 'block';
             restoreActiveButtons();
             
             const sizeGroup = document.getElementById('group-size');
