@@ -180,13 +180,19 @@
                             $sql = "SELECT p.idProducto, p.nombre, p.descripcion, p.precioVenta, p.idCategoria, c.nombre as categoria 
                                     FROM productos p 
                                     INNER JOIN categorias c ON p.idCategoria = c.idCategoria 
+                                    WHERE p.status = 'activo' 
                                     ORDER BY p.idProducto";
+                            
                             $result = $conn->query($sql);
                             
-                            if ($result->num_rows > 0) {
+                            if ($result && $result->num_rows > 0) {
                                 while($row = $result->fetch_assoc()) {
                                     $nombreEscapado = htmlspecialchars($row['nombre'], ENT_QUOTES);
                                     $descripcionEscapada = htmlspecialchars($row['descripcion'], ENT_QUOTES);
+                                    
+                                    
+                                    $nombreJS = addslashes($row['nombre']);
+                                    $descripcionJS = addslashes($row['descripcion']);
                                     
                                     echo "<tr class='product-row' onclick='cargarProducto({$row['idProducto']}, \"{$nombreEscapado}\", \"{$descripcionEscapada}\", {$row['precioVenta']}, {$row['idCategoria']})'>
                                             <td>{$row['idProducto']}</td>
@@ -208,7 +214,9 @@
                                       </tr>';
                             }
                             
-                            $conn->close();
+                            if ($conn) {
+                                $conn->close();
+                            }
                             ?>
                         </tbody>
                     </table>

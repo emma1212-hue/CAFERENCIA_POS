@@ -169,10 +169,11 @@
                         <tbody>
                             <?php
                             include '../conexion.php';
-                            
+                        
                             $sql = "SELECT p.idProducto, p.nombre, p.descripcion, p.precioVenta, c.nombre as categoria 
                                     FROM productos p 
                                     INNER JOIN categorias c ON p.idCategoria = c.idCategoria 
+                                    WHERE p.status = 'activo'  
                                     ORDER BY p.idProducto";
                             $result = $conn->query($sql);
                             

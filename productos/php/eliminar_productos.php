@@ -16,48 +16,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     try {
-       
-        $conn->begin_transaction();
         
-        $sql_delete = "DELETE FROM productos WHERE idProducto = ?";
-        $stmt_delete = $conn->prepare($sql_delete);
-        $stmt_delete->bind_param("i", $idProducto);
+        $sql_update = "UPDATE productos SET status = 'inactivo' WHERE idProducto = ?";
+        $stmt_update = $conn->prepare($sql_update);
+        $stmt_update->bind_param("i", $idProducto);
         
-        if (!$stmt_delete->execute()) {
+        if (!$stmt_update->execute()) {
             throw new Exception('Error al eliminar el producto: ' . $conn->error);
         }
         
-        if ($stmt_delete->affected_rows === 0) {
+        if ($stmt_update->affected_rows === 0) {
             throw new Exception('No se encontró el producto o ya fue eliminado');
         }
-   
-        $sql_update_ids = "SET @new_id = 0;
-                          UPDATE productos SET idProducto = @new_id:=@new_id+1 ORDER BY idProducto;
-                          ALTER TABLE productos AUTO_INCREMENT = 1;";
-        
-        if ($conn->multi_query($sql_update_ids)) {
-            do {
-                if ($result = $conn->store_result()) {
-                    $result->free();
-                }
-            } while ($conn->more_results() && $conn->next_result());
-        } else {
-            throw new Exception('Error al reorganizar IDs: ' . $conn->error);
-        }
-        
-       
-        $conn->commit();
         
         echo json_encode([
             'success' => true,
-            'message' => 'Producto eliminado correctamente y IDs reorganizados'
+            'message' => 'Producto eliminado correctamente'
         ]);
         
-        $stmt_delete->close();
+        $stmt_update->close();
         
     } catch (Exception $e) {
-      
-        $conn->rollback();
         echo json_encode([
             'success' => false,
             'message' => 'Error: ' . $e->getMessage()

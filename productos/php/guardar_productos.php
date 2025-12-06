@@ -31,14 +31,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     
     if (empty($errores)) {
-        $sql_verificar = "SELECT idProducto FROM productos WHERE nombre = ?";
+        
+        $sql_verificar = "SELECT idProducto FROM productos WHERE nombre = ? AND status = 'activo'";
         $stmt_verificar = $conn->prepare($sql_verificar);
         $stmt_verificar->bind_param("s", $nombre);
         $stmt_verificar->execute();
         $result_verificar = $stmt_verificar->get_result();
         
         if ($result_verificar->num_rows > 0) {
-            $errores[] = "Ya existe un producto con el nombre: " . htmlspecialchars($nombre);
+            $errores[] = "Ya existe un producto ACTIVO con el nombre: " . htmlspecialchars($nombre);
         }
         $stmt_verificar->close();
     }
@@ -46,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (empty($errores)) {
         
-        $sql = "INSERT INTO productos (nombre, descripcion, precioVenta, idCategoria) 
-                VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO productos (nombre, descripcion, precioVenta, idCategoria, status) 
+                VALUES (?, ?, ?, ?, 'activo')";
         
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssdi", $nombre, $descripcion, $precioVenta, $idCategoria);

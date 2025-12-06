@@ -113,16 +113,18 @@
             <?php
             include '../conexion.php';
             
-            
             $buscarId = isset($_GET['buscarId']) ? trim($_GET['buscarId']) : '';
             $buscarNombre = isset($_GET['buscarNombre']) ? trim($_GET['buscarNombre']) : '';
            
+          
             $sql = "SELECT p.idProducto, p.nombre, p.descripcion, p.precioVenta, c.nombre as categoria 
                     FROM productos p 
                     INNER JOIN categorias c ON p.idCategoria = c.idCategoria 
-                    WHERE 1=1";
+                    WHERE p.status = 'activo'";  // <-- AQUÍ ESTÁ EL FILTRO
+            
             $params = [];
             $types = '';
+            
             
             if (!empty($buscarId)) {
                 $sql .= " AND p.idProducto = ?";
@@ -138,7 +140,6 @@
             
             $sql .= " ORDER BY p.idProducto";
             
-     
             $stmt = $conn->prepare($sql);
             
             if (!empty($params)) {
@@ -149,6 +150,7 @@
             $result = $stmt->get_result();
             $totalResultados = $result->num_rows;
      
+            // Mostrar resultados de búsqueda
             if (!empty($buscarId) || !empty($buscarNombre)) {
                 echo "<div class='search-results'>";
                 echo "<i class='fas fa-info-circle'></i> ";

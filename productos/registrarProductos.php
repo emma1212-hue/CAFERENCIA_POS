@@ -145,7 +145,7 @@
             </div>
         </div>
 
-        <!-- Tabla de Productos -->
+       
         <div class="table-section">
             <div class="table-panel">
                 <div class="table-header">
@@ -167,13 +167,16 @@
                             <?php
                             include '../conexion.php';
                             
+                            
                             $sql = "SELECT p.idProducto, p.nombre, p.descripcion, p.precioVenta, c.nombre as categoria 
                                     FROM productos p 
                                     INNER JOIN categorias c ON p.idCategoria = c.idCategoria 
+                                    WHERE p.status = 'activo'  
                                     ORDER BY p.idProducto";
+                            
                             $result = $conn->query($sql);
                             
-                            if ($result->num_rows > 0) {
+                            if ($result && $result->num_rows > 0) {
                                 while($row = $result->fetch_assoc()) {
                                     echo "<tr>
                                             <td>{$row['idProducto']}</td>
@@ -195,7 +198,9 @@
                                       </tr>';
                             }
                             
-                            $conn->close();
+                            if ($conn) {
+                                $conn->close();
+                            }
                             ?>
                         </tbody>
                     </table>
